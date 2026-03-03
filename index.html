@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auracelle Orion v4 · Cyber Governance Wargaming Simulation · Auracelle AI Governance Labs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  /* DOE / National Lab palette */
+  --bg0:   #f5f6f8;
+  --bg1:   #ffffff;
+  --bg2:   #f8f9fb;
+  --bg3:   #f0f2f5;
+  --bg-hdr:#1a2535;
+  --bg-nav:#222f42;
+  --b1:    #dde2ea;
+  --b2:    #c4ccd8;
+  --b3:    #a8b4c4;
+  --ifd:   #005a9e;
+  --ifdd:  #eaf2fb;
+  --swd:   #267350;
+  --swdd:  #eaf5ef;
+  --sc:    #b05000;
+  --scd:   #fdf2e8;
+  --gov:   #6b3fa0;
+  --govd:  #f3eefa;
+  --crit:  #c0392b;
+  --hi:    #d4680a;
+  --med:   #b88a00;
+  --lo:    #267350;
+  --ok:    #1a6b3c;
+  --gl:    #b88a00;
+  --gld:   #fdf9ec;
+  --tx:    #2c3a4a;
+  --txm:   #5a6a7e;
+  --txd:   #8a9bae;
+  --txh:   #0e1825;
+  --accent:#005a9e;
+  --sh-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --sh-md: 0 2px 8px rgba(0,0,0,0.10);
+  --sh-lg: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:14px;}
+body{background:var(--bg0);color:var(--tx);font-family:'DM Sans',system-ui,sans-serif;font-weight:400;height:100vh;overflow:hidden;}
+
+/* HEADER */
+.hdr{height:54px;background:var(--bg-hdr);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0;position:relative;z-index:100;}
+.om{width:30px;height:30px;flex-shrink:0;}
+.ht{font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:.95rem;color:#fff;letter-spacing:.02em;}
+.hs{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:rgba(255,255,255,.4);letter-spacing:.08em;margin-top:1px;}
+.hdiv{width:1px;height:26px;background:rgba(255,255,255,.14);}
+
+/* Phase strip */
+.ph-strip{display:flex;align-items:center;gap:2px;}
+.ph{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:3px;border:1px solid transparent;transition:all .25s;}
+.ph.on{border-color:var(--ph-c);background:var(--ph-bg);}
+.phn{font-family:'JetBrains Mono',monospace;font-size:.54rem;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.15);color:rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;}
+.ph.on .phn{background:var(--ph-c);color:#fff;}
+.phl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.59rem;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.28);}
+.ph.on .phl{color:var(--ph-c);}
+.pharr{color:rgba(255,255,255,.18);font-size:.62rem;}
+.sp{flex:1;}
+
+/* Header score boxes */
+.hs-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:2px 10px;text-align:center;}
+.hs-num{font-family:'Source Serif 4',serif;font-weight:700;font-size:.98rem;line-height:1;}
+.hs-lbl{font-family:'JetBrains Mono',monospace;font-size:.47rem;color:rgba(255,255,255,.32);letter-spacing:.1em;margin-top:1px;}
+.hd-turn{text-align:right;}
+.hd-tn{font-family:'Source Serif 4',serif;font-weight:700;font-size:.98rem;color:#90c8f0;line-height:1;}
+.hd-tl{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:rgba(255,255,255,.28);letter-spacing:.1em;}
+
+/* LAYOUT */
+.shell{display:grid;grid-template-columns:250px 1fr 300px;height:calc(100vh - 54px);}
+
+/* LEFT NAV — dark sidebar */
+.lnav{background:var(--bg-nav);border-right:1px solid rgba(255,255,255,.05);overflow-y:auto;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.07) transparent;}
+.lsec{padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;}
+.lsec-lbl{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:rgba(255,255,255,.28);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;}
+
+/* Scenario cards */
+.snav-btn{padding:9px 11px;border-radius:4px;border-left:3px solid var(--scc,rgba(255,255,255,.12));margin-bottom:5px;cursor:pointer;transition:all .18s;background:rgba(255,255,255,.03);display:block;width:100%;}
+.snav-btn:hover{background:rgba(255,255,255,.07);}
+.snav-btn.active{background:rgba(255,255,255,.08);}
+.snav-title{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.73rem;color:rgba(255,255,255,.85);margin-bottom:2px;}
+.snav-meta{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:rgba(255,255,255,.33);line-height:1.4;}
+.snav-arch{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--scc,rgba(255,255,255,.28));margin-top:4px;letter-spacing:.04em;}
+
+/* GCC display */
+.gcc-box{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:10px 12px;text-align:center;}
+.gcc-eq{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:rgba(255,255,255,.28);margin-bottom:4px;line-height:1.55;}
+.gcc-val{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.75rem;line-height:1;}
+.gcc-lbl{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:rgba(255,255,255,.28);letter-spacing:.1em;margin-top:2px;}
+.gcc-thr{font-family:'JetBrains Mono',monospace;font-size:.51rem;margin-top:4px;padding:2px 7px;border-radius:2px;display:inline-block;}
+
+/* Domain health */
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.dg-box{background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.06);border-radius:3px;padding:6px 8px;}
+.dg-box.st{border-color:rgba(192,57,43,.45);}
+.dg-nm{font-family:'JetBrains Mono',monospace;font-size:.51rem;letter-spacing:.07em;margin-bottom:2px;}
+.dg-v{font-family:'Source Serif 4',serif;font-weight:700;font-size:.98rem;line-height:1;}
+.dg-s{font-family:'JetBrains Mono',monospace;font-size:.47rem;color:rgba(255,255,255,.28);margin-top:1px;}
+
+/* Intel tokens */
+.tok-row{display:flex;gap:5px;align-items:center;}
+.itok{width:26px;height:26px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-size:.68rem;cursor:pointer;transition:all .18s;}
+.itok.av{border-color:#90c8f0;color:#90c8f0;background:rgba(144,200,240,.1);}
+.itok.sp{border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.14);cursor:default;}
+.itok.av:hover{background:rgba(144,200,240,.2);transform:scale(1.08);}
+.tok-hint{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:rgba(255,255,255,.26);margin-top:4px;}
+
+/* Threat bars */
+.trow{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.tlbl{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:rgba(255,255,255,.42);width:82px;flex-shrink:0;}
+.tbar-o{flex:1;height:5px;background:rgba(0,0,0,.25);border-radius:3px;overflow:hidden;}
+.tbar-f{height:100%;border-radius:3px;transition:width .9s ease;}
+.tval{font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
+
+/* Event log */
+.elog{flex:1;overflow-y:auto;padding:6px 11px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.06) transparent;}
+.le{display:flex;gap:5px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.6rem;line-height:1.4;align-items:flex-start;}
+.le-t{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.22);min-width:28px;padding-top:1px;flex-shrink:0;}
+.le-tag{font-family:'JetBrains Mono',monospace;font-size:.52rem;font-weight:600;min-width:30px;flex-shrink:0;}
+.le-tag.ADV{color:#e07070;}.le-tag.DEF{color:#7ec89a;}.le-tag.GOV{color:#c084db;}
+.le-tag.SCTL{color:#f0a060;}.le-tag.SYS{color:rgba(255,255,255,.26);}.le-tag.WIN{color:#f0d080;}
+.le-msg{color:rgba(255,255,255,.44);flex:1;}
+
+/* CENTRE BOARD — light field */
+.gboard{display:flex;flex-direction:column;background:var(--bg0);overflow:hidden;position:relative;}
+.scen-bar{background:var(--bg1);border-bottom:1px solid var(--b1);padding:7px 18px;display:flex;align-items:center;gap:11px;flex-shrink:0;box-shadow:var(--sh-sm);}
+.sb-nm{font-family:'Source Serif 4',serif;font-weight:600;font-size:.86rem;color:var(--txh);}
+.sb-desc{font-size:.69rem;color:var(--txm);flex:1;}
+.sch{font-family:'JetBrains Mono',monospace;font-size:.53rem;padding:2px 6px;border:1px solid;border-radius:2px;letter-spacing:.04em;}
+.garea{flex:1;overflow-y:auto;padding:14px 18px;scrollbar-width:thin;scrollbar-color:var(--b1) transparent;display:flex;flex-direction:column;gap:11px;}
+
+/* PHASE CARDS — white, clean */
+.pc{background:var(--bg1);border:1px solid var(--b1);border-radius:6px;overflow:hidden;box-shadow:var(--sh-md);animation:sIn .3s ease;flex-shrink:0;}
+@keyframes sIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.pch{padding:10px 15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--b1);background:var(--bg2);}
+.pbadge{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:2px 7px;border-radius:2px;border:1px solid;letter-spacing:.08em;font-weight:600;flex-shrink:0;}
+.ptitle{font-family:'Source Serif 4',serif;font-weight:600;font-size:.9rem;color:var(--txh);flex:1;}
+.ptag{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--txd);letter-spacing:.07em;}
+.pb{padding:13px 15px;}
+
+/* Event description */
+.evd{font-size:.79rem;color:var(--tx);line-height:1.65;margin-bottom:11px;}
+
+/* Propagation chain */
+.prop{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:11px;padding:8px 11px;background:var(--bg2);border:1px solid var(--b1);border-radius:4px;}
+.prop-lbl{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);letter-spacing:.1em;margin-right:2px;}
+.pn{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:2px 6px;border:1px solid;border-radius:2px;white-space:nowrap;}
+.pn-ifd{border-color:var(--ifd);color:var(--ifd);background:var(--ifdd);}
+.pn-swd{border-color:var(--swd);color:var(--swd);background:var(--swdd);}
+.pn-sctl{border-color:var(--sc);color:var(--sc);background:var(--scd);}
+.pn-gov{border-color:var(--gov);color:var(--gov);background:var(--govd);}
+.pn-crit{border-color:var(--crit);color:var(--crit);background:#fde8e7;}
+.pn-low{border-color:var(--ok);color:var(--ok);background:var(--swdd);}
+.pn-arr{color:var(--txd);font-size:.6rem;}
+
+/* Intel reveals */
+.ir-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:11px;}
+.ir-item{background:var(--bg2);border:1px solid var(--b1);border-radius:4px;padding:8px 10px;transition:all .4s;}
+.ir-lbl{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);letter-spacing:.06em;margin-bottom:2px;}
+.ir-val{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:600;}
+@keyframes fIn{from{opacity:0}to{opacity:1}}
+
+/* Decision prompt */
+.dec-p{font-family:'Source Serif 4',serif;font-style:italic;font-size:.81rem;color:var(--txm);margin-bottom:11px;padding-left:11px;border-left:3px solid var(--gl);}
+
+/* Option cards */
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
+.opt{background:var(--bg2);border:1.5px solid var(--b1);border-radius:5px;padding:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.opt::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--oc,var(--b1));transition:width .2s;}
+.opt:hover,.opt.sel{border-color:var(--oc);background:var(--bg1);box-shadow:var(--sh-md);}
+.opt:hover::before,.opt.sel::before{width:4px;}
+.opt-let{font-family:'JetBrains Mono',monospace;font-size:.54rem;font-weight:700;color:var(--oc,var(--txd));letter-spacing:.1em;margin-bottom:4px;}
+.opt-title{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.77rem;color:var(--txh);margin-bottom:4px;line-height:1.3;}
+.opt-body{font-size:.69rem;color:var(--txm);line-height:1.5;margin-bottom:8px;}
+.opt-trades{display:flex;gap:4px;flex-wrap:wrap;}
+.ot{font-family:'JetBrains Mono',monospace;font-size:.52rem;padding:2px 5px;border-radius:2px;border:1px solid;}
+.ot-pos{border-color:#b8ddc8;color:var(--ok);background:var(--swdd);}
+.ot-neg{border-color:#f5c0be;color:var(--crit);background:#fde8e7;}
+.ot-neu{border-color:var(--b2);color:var(--txm);}
+
+/* Consequence blocks */
+.cons-blk{background:var(--bg2);border:1px solid var(--b1);border-radius:4px;padding:11px 13px;margin-bottom:9px;}
+.cons-title{font-family:'Source Serif 4',serif;font-weight:600;font-size:.82rem;color:var(--txh);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.delta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px;}
+.dbox{background:var(--bg1);border:1px solid var(--b1);border-radius:3px;padding:6px 7px;text-align:center;}
+.dm{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);margin-bottom:2px;letter-spacing:.05em;}
+.dbef{font-family:'JetBrains Mono',monospace;font-size:.59rem;color:var(--txd);}
+.darr{font-size:.6rem;margin:0 2px;}
+.daft{font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:700;}
+.ddlt{font-family:'JetBrains Mono',monospace;font-size:.53rem;margin-top:2px;}
+.dp{color:var(--ok);}.dn{color:var(--crit);}.dnu{color:var(--txd);}
+
+.casc-alert{display:flex;align-items:flex-start;gap:9px;background:#fef4ec;border:1px solid #f5c898;border-radius:4px;padding:9px 11px;margin-bottom:7px;}
+.ca-body{font-size:.69rem;color:var(--tx);line-height:1.5;}
+.ca-m{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--hi);font-weight:600;}
+
+.cf-blk{background:var(--govd);border:1px solid #cdb8e8;border-radius:4px;padding:10px;margin-top:7px;}
+.cf-title{font-family:'JetBrains Mono',monospace;font-size:.53rem;color:var(--gov);letter-spacing:.1em;margin-bottom:4px;}
+.cf-text{font-size:.69rem;color:var(--txm);line-height:1.5;}
+.cf-delta{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gov);font-weight:600;}
+
+/* Impact chips */
+.impact-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+.imp{font-family:'JetBrains Mono',monospace;font-size:.54rem;padding:2px 6px;border-radius:2px;border:1px solid;}
+.imp-pos{border-color:#b8ddc8;color:var(--ok);background:var(--swdd);}
+.imp-neg{border-color:#f5c0be;color:var(--crit);background:#fde8e7);}
+.imp-neu{border-color:var(--b2);color:var(--txm);}
+
+/* AAR */
+.aar-layout{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.aar-card{background:var(--bg1);border:1px solid var(--b1);border-radius:5px;padding:13px;box-shadow:var(--sh-sm);}
+.aar-title{font-family:'Source Serif 4',serif;font-weight:600;font-size:.8rem;color:var(--txh);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:7px;}
+.aar-psi-num{font-family:'Source Serif 4',serif;font-weight:700;font-size:2.8rem;line-height:1;text-align:center;margin:7px 0 3px;}
+.aar-psi-lbl{font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--txd);letter-spacing:.1em;text-align:center;margin-bottom:5px;}
+.aar-grade{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.73rem;padding:3px 12px;border-radius:3px;display:block;text-align:center;letter-spacing:.04em;margin-bottom:8px;}
+.psi-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.psi-comp{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txm);flex:1;}
+.psi-bo{flex:1;height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;}
+.psi-bf{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.psi-sc{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;width:30px;text-align:right;flex-shrink:0;}
+.dh-row{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid var(--b1);align-items:flex-start;}
+.dh-t{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);min-width:36px;flex-shrink:0;padding-top:1px;}
+.dh-ch{font-size:.69rem;color:var(--tx);flex:1;line-height:1.4;}
+.dh-ps{font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;flex-shrink:0;}
+
+/* Endgame overlay */
+.ego{position:absolute;inset:0;background:rgba(245,246,248,.94);display:flex;align-items:center;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity .5s;}
+.ego.on{opacity:1;pointer-events:all;}
+.egbox{max-width:440px;width:90%;text-align:center;padding:30px;background:var(--bg1);border:1px solid var(--b2);border-radius:7px;box-shadow:var(--sh-lg);}
+.eg-icon{font-size:2.5rem;margin-bottom:10px;}
+.eg-title{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.35rem;color:var(--txh);margin-bottom:5px;}
+.eg-psi{font-family:'Source Serif 4',serif;font-weight:700;font-size:2.9rem;line-height:1;margin-bottom:2px;}
+.eg-plbl{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--txd);letter-spacing:.12em;margin-bottom:13px;}
+.eg-sub{font-size:.76rem;color:var(--txm);line-height:1.6;margin-bottom:16px;}
+.eg-btn{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 24px;border:1.5px solid var(--accent);border-radius:4px;color:var(--accent);background:var(--ifdd);cursor:pointer;transition:all .2s;}
+.eg-btn:hover{background:#d0e6f8;}
+
+/* RIGHT PANEL */
+.rpanel{background:var(--bg1);border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
+.rsec{padding:9px 13px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.rsec-title{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.67rem;color:var(--txh);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.psi-box{background:var(--bg2);border:1px solid var(--b2);border-radius:4px;padding:8px 11px;text-align:center;}
+.psi-live{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.85rem;line-height:1;}
+.psi-lbl{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--txd);letter-spacing:.1em;margin-top:2px;}
+.ptb{margin-top:6px;height:7px;background:#e8edf4;border-radius:4px;overflow:hidden;position:relative;}
+.ptb-f{height:100%;border-radius:4px;transition:width .9s ease;}
+.ptb-line{position:absolute;top:0;bottom:0;width:2px;background:rgba(184,138,0,.55);left:50%;}
+.gt-row{margin-bottom:6px;}
+.gt-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+.gt-nm{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txm);}
+.gt-val{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;}
+.gt-bo{height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;}
+.gt-bf{height:100%;border-radius:3px;transition:width .8s ease;}
+.reg-item{display:flex;align-items:flex-start;gap:7px;padding:4px 0;border-bottom:1px solid var(--b1);}
+.reg-item:last-child{border-bottom:none;}
+.reg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.reg-nm{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--tx);margin-bottom:1px;}
+.reg-st{font-size:.61rem;color:var(--txd);line-height:1.3;}
+.gpfeed{flex:1;overflow-y:auto;padding:6px 11px;scrollbar-width:thin;scrollbar-color:var(--b1) transparent;}
+.gf-row{display:flex;gap:6px;padding:5px 0;border-bottom:1px solid var(--b1);align-items:flex-start;}
+.gf-t{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);min-width:34px;flex-shrink:0;padding-top:1px;}
+.gf-ch{font-size:.67rem;color:var(--tx);flex:1;line-height:1.4;}
+.gf-ps{font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:600;flex-shrink:0;}
+
+/* Buttons */
+.btn-row{display:flex;justify-content:flex-end;padding-top:10px;}
+.btn-multi{display:flex;gap:8px;padding-top:10px;}
+.btn{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid;border-radius:4px;background:transparent;cursor:pointer;transition:all .2s;}
+.btn-intel{border-color:var(--ifd);color:var(--ifd);}
+.btn-intel:hover{background:var(--ifdd);}
+.btn-decide{border-color:var(--gl);color:var(--gl);}
+.btn-decide:hover{background:var(--gld);}
+.btn-resolve{border-color:var(--crit);color:var(--crit);}
+.btn-resolve:hover{background:#fde8e7;}
+.btn-aar{border-color:var(--swd);color:var(--swd);}
+.btn-aar:hover{background:var(--swdd);}
+.btn-next{border-color:var(--gov);color:var(--gov);}
+.btn-next:hover{background:var(--govd);}
+.btn-full{border-color:var(--accent);color:var(--accent);background:var(--ifdd);}
+.btn-full:hover{background:#d0e6f8;}
+.btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* scrollbars */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+/* hint text */
+.hint{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:rgba(255,255,255,.26);margin-top:3px;}
+
+/* ── Tooltips ── */
+.tt-wrap{position:relative;display:inline-flex;}
+.tt-wrap.block{display:flex;}
+.tt{position:absolute;left:105%;top:50%;transform:translateY(-50%);
+    background:#0e1825;border:1px solid rgba(144,200,240,.22);border-radius:5px;
+    padding:8px 11px;width:220px;z-index:800;pointer-events:none;
+    opacity:0;transition:opacity .18s;box-shadow:0 4px 16px rgba(0,0,0,.45);}
+.tt-wrap:hover .tt{opacity:1;}
+.tt-title{font-family:'JetBrains Mono',monospace;font-size:.52rem;font-weight:700;
+          color:#90c8f0;letter-spacing:.07em;margin-bottom:5px;}
+.tt-body{font-family:'DM Sans',sans-serif;font-size:.65rem;color:rgba(255,255,255,.62);
+         line-height:1.55;}
+.tt-thresh{font-family:'JetBrains Mono',monospace;font-size:.49rem;
+           color:rgba(255,255,255,.32);margin-top:5px;line-height:1.6;border-top:1px solid rgba(255,255,255,.08);padding-top:4px;}
+/* Flip tooltip left when near right edge (left nav) */
+.tt-left .tt{left:auto;right:105%;}
+
+/* ── Compatibility aliases for dark-version compact class names ── */
+/* Left nav */
+.sl{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:rgba(255,255,255,.28);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;}
+.sb{padding:9px 11px;border-radius:4px;border-left:3px solid rgba(255,255,255,.12);margin-bottom:5px;cursor:pointer;transition:all .18s;background:rgba(255,255,255,.03);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.73rem;color:rgba(255,255,255,.85);}
+.sb:hover{background:rgba(255,255,255,.07);}
+.sb.on{background:rgba(255,255,255,.08);border-left-color:#90c8f0;}
+/* GCC display aliases */
+.geq{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:rgba(255,255,255,.28);margin-bottom:4px;line-height:1.55;}
+.gv{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.75rem;line-height:1;}
+.gl2{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:rgba(255,255,255,.28);letter-spacing:.1em;margin-top:2px;}
+.gth{font-family:'JetBrains Mono',monospace;font-size:.51rem;margin-top:4px;padding:2px 7px;border-radius:2px;display:inline-block;}
+/* Domain boxes */
+.dbox{background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.06);border-radius:3px;padding:6px 8px;}
+.dbox.st{border-color:rgba(192,57,43,.45);}
+.dn{font-family:'JetBrains Mono',monospace;font-size:.51rem;letter-spacing:.07em;margin-bottom:2px;}
+.dv{font-family:'Source Serif 4',serif;font-weight:700;font-size:.98rem;line-height:1;}
+.ds{font-family:'JetBrains Mono',monospace;font-size:.47rem;color:rgba(255,255,255,.28);margin-top:1px;}
+/* Token row */
+.trow2{display:flex;gap:5px;align-items:center;}
+.itk{width:26px;height:26px;border-radius:50%;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-size:.68rem;cursor:pointer;transition:all .18s;}
+.itk.av{border-color:#90c8f0;color:#90c8f0;background:rgba(144,200,240,.1);}
+.itk.sp{border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.14);cursor:default;}
+.itk.av:hover{background:rgba(144,200,240,.2);transform:scale(1.08);}
+.th2{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:rgba(255,255,255,.26);margin-top:4px;}
+/* Threat bar aliases */
+.tbo{flex:1;height:5px;background:rgba(0,0,0,.25);border-radius:3px;overflow:hidden;}
+.tbf{height:100%;border-radius:3px;transition:width .9s ease;}
+.tv{font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;width:32px;text-align:right;flex-shrink:0;}
+/* Log aliases */
+.lt{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.22);min-width:28px;padding-top:1px;flex-shrink:0;}
+.ltg{font-family:'JetBrains Mono',monospace;font-size:.52rem;font-weight:600;min-width:30px;flex-shrink:0;}
+.ltg.A{color:#e07070;}.ltg.D{color:#7ec89a;}.ltg.G{color:#c084db;}
+.ltg.S{color:rgba(255,255,255,.26);}.ltg.C{color:#f0a060;}.ltg.W{color:#f0d080;}
+.lm{color:rgba(255,255,255,.44);flex:1;font-size:.6rem;line-height:1.4;}
+/* Centre board */
+.gb{display:flex;flex-direction:column;background:var(--bg0);overflow:hidden;position:relative;}
+/* Phase card aliases */
+.pc{background:var(--bg1);border:1px solid var(--b1);border-radius:6px;overflow:hidden;box-shadow:var(--sh-md);animation:sIn .3s ease;flex-shrink:0;margin-bottom:11px;}
+.pch{padding:10px 15px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--b1);background:var(--bg2);}
+.pb{padding:13px 15px;}
+.pbadge{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:2px 7px;border-radius:2px;border:1px solid;letter-spacing:.08em;font-weight:600;flex-shrink:0;}
+.ptitle{font-family:'Source Serif 4',serif;font-weight:600;font-size:.9rem;color:var(--txh);flex:1;}
+.ptag{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--txd);letter-spacing:.07em;}
+/* Event description */
+.evd{font-size:.79rem;color:var(--tx);line-height:1.65;margin-bottom:11px;}
+/* Prop chain aliases */
+.prop{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:11px;padding:8px 11px;background:var(--bg2);border:1px solid var(--b1);border-radius:4px;}
+.prop-lbl{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);letter-spacing:.1em;margin-right:2px;}
+.pn{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:2px 6px;border:1px solid;border-radius:2px;white-space:nowrap;}
+.pn-ifd{border-color:var(--ifd);color:var(--ifd);background:var(--ifdd);}
+.pn-swd{border-color:var(--swd);color:var(--swd);background:var(--swdd);}
+.pn-sc{border-color:var(--sc);color:var(--sc);background:var(--scd);}
+.pn-gov{border-color:var(--gov);color:var(--gov);background:var(--govd);}
+.pn-crit{border-color:var(--crit);color:var(--crit);background:#fde8e7;}
+.pn-lo{border-color:var(--ok);color:var(--ok);background:var(--swdd);}
+.pn-arr{color:var(--txd);font-size:.6rem;}
+/* Intel reveal aliases */
+.irg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:11px;}
+.iri{background:var(--bg2);border:1px solid var(--b1);border-radius:4px;padding:8px 10px;transition:all .4s;}
+.irl{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);letter-spacing:.06em;margin-bottom:2px;}
+.irv{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:600;}
+/* Decision prompt */
+.dp2{font-family:'Source Serif 4',serif;font-style:italic;font-size:.81rem;color:var(--txm);margin-bottom:11px;padding-left:11px;border-left:3px solid var(--gl);}
+/* Options */
+.og{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
+.op{background:var(--bg2);border:1.5px solid var(--b1);border-radius:5px;padding:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.op::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--oc,var(--b1));transition:width .2s;}
+.op:hover,.op.sel{border-color:var(--oc);background:var(--bg1);box-shadow:var(--sh-md);}
+.op:hover::before,.op.sel::before{width:4px;}
+.ol{font-family:'JetBrains Mono',monospace;font-size:.54rem;font-weight:700;color:var(--oc,var(--txd));letter-spacing:.1em;margin-bottom:4px;}
+.oti{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.77rem;color:var(--txh);margin-bottom:4px;line-height:1.3;}
+.ob{font-size:.69rem;color:var(--txm);line-height:1.5;margin-bottom:8px;}
+.otr{display:flex;gap:4px;flex-wrap:wrap;}
+/* Consequence aliases */
+.cblk{background:var(--bg2);border:1px solid var(--b1);border-radius:4px;padding:11px 13px;margin-bottom:9px;}
+.ctitle{font-family:'Source Serif 4',serif;font-weight:600;font-size:.82rem;color:var(--txh);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px;}
+.dbx{background:var(--bg1);border:1px solid var(--b1);border-radius:3px;padding:6px 7px;text-align:center;}
+.dm2{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);margin-bottom:2px;letter-spacing:.05em;}
+.dbf2{font-family:'JetBrains Mono',monospace;font-size:.59rem;color:var(--txd);}
+.darr2{font-size:.6rem;margin:0 2px;}
+.daft2{font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:700;}
+.ddlt2{font-family:'JetBrains Mono',monospace;font-size:.53rem;margin-top:2px;}
+/* Cascade alert */
+.ca{display:flex;align-items:flex-start;gap:9px;background:#fef4ec;border:1px solid #f5c898;border-radius:4px;padding:9px 11px;margin-bottom:7px;}
+.cab{font-size:.69rem;color:var(--tx);line-height:1.5;}
+.cam{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--hi);font-weight:600;}
+/* Counterfactual */
+.cfb{background:var(--govd);border:1px solid #cdb8e8;border-radius:4px;padding:10px;margin-top:7px;}
+.cft{font-family:'JetBrains Mono',monospace;font-size:.53rem;color:var(--gov);letter-spacing:.1em;margin-bottom:4px;}
+.cfd{font-size:.69rem;color:var(--txm);line-height:1.5;}
+.cfdelta{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--gov);font-weight:600;}
+/* Governance track impacts */
+.gi-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.gi-nm{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txm);flex:1;}
+.gi-v{font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;}
+/* AAR aliases */
+.aarl{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.aarc{background:var(--bg1);border:1px solid var(--b1);border-radius:5px;padding:13px;box-shadow:var(--sh-sm);}
+.aart{font-family:'Source Serif 4',serif;font-weight:600;font-size:.8rem;color:var(--txh);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:7px;}
+.aarpn{font-family:'Source Serif 4',serif;font-weight:700;font-size:2.8rem;line-height:1;text-align:center;margin:7px 0 3px;}
+.aarpl{font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--txd);letter-spacing:.1em;text-align:center;margin-bottom:5px;}
+.aarg{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.73rem;padding:3px 12px;border-radius:3px;display:block;text-align:center;letter-spacing:.04em;margin-bottom:8px;}
+.psir{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.psic{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txm);flex:1;}
+.psibo{flex:1;height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;}
+.psibf{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.psisc{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;width:30px;text-align:right;flex-shrink:0;}
+.dhr{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid var(--b1);align-items:flex-start;}
+.dht{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);min-width:36px;flex-shrink:0;padding-top:1px;}
+.dhc{font-size:.69rem;color:var(--tx);flex:1;line-height:1.4;}
+.dhp{font-family:'JetBrains Mono',monospace;font-size:.57rem;font-weight:600;flex-shrink:0;}
+/* Endgame overlay aliases */
+.ego{position:absolute;inset:0;background:rgba(245,246,248,.94);display:flex;align-items:center;justify-content:center;z-index:500;opacity:0;pointer-events:none;transition:opacity .5s;}
+.ego.on{opacity:1;pointer-events:all;}
+.egbox{max-width:440px;width:90%;text-align:center;padding:30px;background:var(--bg1);border:1px solid var(--b2);border-radius:7px;box-shadow:var(--sh-lg);}
+/* Right panel aliases */
+.rp{background:var(--bg1);border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
+.rsec{padding:11px 13px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.rstitle{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.67rem;color:var(--txh);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.psibox{background:var(--bg2);border:1px solid var(--b2);border-radius:4px;padding:8px 11px;text-align:center;}
+.plive{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.85rem;line-height:1;}
+.plbl{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--txd);letter-spacing:.1em;margin-top:2px;}
+/* GPF feed aliases */
+.gfr{display:flex;gap:6px;padding:5px 0;border-bottom:1px solid var(--b1);align-items:flex-start;}
+.gft{font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);min-width:34px;flex-shrink:0;padding-top:1px;}
+.gfc{font-size:.67rem;color:var(--tx);flex:1;line-height:1.4;}
+.gfp{font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:600;flex-shrink:0;}
+/* Scenario bar aliases */
+.sbnm{font-family:'Source Serif 4',serif;font-weight:600;font-size:.86rem;color:var(--txh);}
+.sbdesc{font-size:.69rem;color:var(--txm);flex:1;}
+/* Button aliases */
+.bti{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid var(--ifd);border-radius:4px;color:var(--ifd);background:transparent;cursor:pointer;transition:all .2s;}
+.bti:hover{background:var(--ifdd);}
+.btd{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid var(--gl);border-radius:4px;color:var(--gl);background:transparent;cursor:pointer;transition:all .2s;}
+.btd:hover{background:var(--gld);}
+.btr{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid var(--crit);border-radius:4px;color:var(--crit);background:transparent;cursor:pointer;transition:all .2s;}
+.btr:hover{background:#fde8e7;}
+.bta{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid var(--swd);border-radius:4px;color:var(--swd);background:transparent;cursor:pointer;transition:all .2s;}
+.bta:hover{background:var(--swdd);}
+.btx{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid var(--gov);border-radius:4px;color:var(--gov);background:transparent;cursor:pointer;transition:all .2s;}
+.btx:hover{background:var(--govd);}
+.btr2{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 24px;border:1.5px solid var(--accent);border-radius:4px;color:var(--accent);background:var(--ifdd);cursor:pointer;transition:all .2s;}
+.btr2:hover{background:#d0e6f8;}
+button:disabled{opacity:.3;cursor:not-allowed;}
+/* Reg dot aliases */
+.rdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+/* Score aliases */
+.scbox{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:2px 10px;text-align:center;}
+.scv{font-family:'Source Serif 4',serif;font-weight:700;font-size:.98rem;line-height:1;}
+.scl{font-family:'JetBrains Mono',monospace;font-size:.47rem;color:rgba(255,255,255,.32);letter-spacing:.1em;margin-top:1px;}
+/* shell alias */
+.lp{background:var(--bg-nav);border-right:1px solid rgba(255,255,255,.05);overflow-y:auto;display:flex;flex-direction:column;scrollbar-width:thin;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <svg class="om" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="15" stroke="rgba(74,158,222,0.18)" stroke-width="0.5"/>
+    <circle cx="8" cy="10" r="1.9" fill="#4a9ede" opacity="0.9"/>
+    <circle cx="24" cy="10" r="1.9" fill="#4a9ede" opacity="0.9"/>
+    <circle cx="8" cy="22" r="1.5" fill="#4ec98a" opacity="0.8"/>
+    <circle cx="24" cy="22" r="1.5" fill="#4ec98a" opacity="0.8"/>
+    <circle cx="11.5" cy="16" r="1.2" fill="#e8a444" opacity="0.9"/>
+    <circle cx="16" cy="16" r="1.6" fill="#fff" opacity="0.95"/>
+    <circle cx="20.5" cy="16" r="1.2" fill="#e8a444" opacity="0.9"/>
+    <line x1="12.6" y1="16" x2="14.4" y2="16" stroke="rgba(232,164,68,0.5)" stroke-width="0.6"/>
+    <line x1="17.6" y1="16" x2="19.4" y2="16" stroke="rgba(232,164,68,0.5)" stroke-width="0.6"/>
+    <line x1="8" y1="10" x2="11.5" y2="16" stroke="rgba(74,158,222,0.25)" stroke-width="0.5"/>
+    <line x1="24" y1="10" x2="20.5" y2="16" stroke="rgba(74,158,222,0.25)" stroke-width="0.5"/>
+    <line x1="8" y1="22" x2="11.5" y2="16" stroke="rgba(78,201,138,0.25)" stroke-width="0.5"/>
+    <line x1="24" y1="22" x2="20.5" y2="16" stroke="rgba(78,201,138,0.25)" stroke-width="0.5"/>
+  </svg>
+  <div><div class="ht">Auracelle Orion v4 · Cyber Governance Wargaming Simulation</div><div class="hs">E-AGPO-HT v2.0 · EVANS 2026 · AURACELLE AI GOVERNANCE LABS · PROPRIETARY IP</div></div>
+  <div class="hdiv"></div>
+  <div class="ph-strip">
+    <div class="ph on" id="ph1" style="--ph-c:var(--ifd);--ph-bg:var(--ifdd)"><div class="phn">1</div><div class="phl">Intel</div></div>
+    <div class="pharr">›</div>
+    <div class="ph" id="ph2" style="--ph-c:var(--gl);--ph-bg:var(--gld)"><div class="phn">2</div><div class="phl">Decision</div></div>
+    <div class="pharr">›</div>
+    <div class="ph" id="ph3" style="--ph-c:var(--crit);--ph-bg:rgba(232,84,84,0.09)"><div class="phn">3</div><div class="phl">Consequence</div></div>
+    <div class="pharr">›</div>
+    <div class="ph" id="ph4" style="--ph-c:var(--swd);--ph-bg:var(--swdd)"><div class="phn">4</div><div class="phl">After-Action</div></div>
+  </div>
+  <div class="sp"></div>
+  <div style="display:flex;gap:7px;align-items:center">
+    <div class="hs-box"><div class="hs-num" style="color:var(--lo)" id="hdef">85</div><div class="hs-lbl">DEFENDER</div></div>
+    <div class="hs-box"><div class="hs-num" style="color:var(--crit)" id="hadv">12</div><div class="hs-lbl">ADVERSARY</div></div>
+  </div>
+  <div class="hdiv"></div>
+  <div><div class="hs-num" style="color:var(--gl);font-family:'Source Serif 4',Georgia,serif" id="htrn" class="hd-tn">T-0</div><div class="hs-lbl">TURN</div></div>
+  <div class="hdiv"></div>
+  <button onclick="document.getElementById('about-modal').classList.add('on')" style="font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(255,255,255,.22);border-radius:3px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">About</button>
+</div>
+
+<div class="shell">
+<!-- LEFT -->
+<div class="lnav">
+  <div class="lsec">
+    <div class="sl">Scenario</div>
+    <div class="snav" id="snav">
+      <div class="sb on" onclick="loadS('mirage',this)">MIRAGE CHAIN</div>
+      <div class="sb" onclick="loadS('ironclad',this)">IRONCLAD SIEGE</div>
+      <div class="sb" onclick="loadS('fracture',this)">FRACTURE PT.</div>
+      <div class="sb" onclick="loadS('phantom',this)">PHANTOM CIRCUIT</div>
+    </div>
+  </div>
+  <div class="lsec">
+    <div class="sl">E-AGPO-HT v2.0 · Master g-GCC</div>
+    <div class="gcc-box">
+      <div class="geq" id="geq">0.25×IFD + 0.40×SWD + 0.25×SC + 0.15×IFD×SWD</div>
+      <div class="tt-wrap" style="display:block;position:relative">
+        <div class="gv" id="gv" style="color:var(--swd);cursor:default">0.42</div>
+        <div class="tt" style="width:230px;left:110%"><div class="tt-title">g-GCC — MASTER GOVERNANCE SCORE</div><div class="tt-body">General Governance Wargaming Capacity. Aggregates IFD, SWD, and SC domain scores with a nonlinear λ coupling term. When g-GCC exceeds 0.70 a cascade is imminent — domain failures begin amplifying each other through the λ cross-domain term.</div><div class="tt-thresh">⚠ CASCADE ≥0.70 · ELEVATED 0.50–0.70 · NOMINAL &lt;0.50</div></div>
+      </div>
+      <div class="gl2">MASTER g-GCC</div>
+      <div class="gth" id="gth" style="background:rgba(78,201,138,.09);border:1px solid var(--swd);color:var(--swd)">BELOW CASCADE (0.70)</div>
+    </div>
+  </div>
+  <div class="lsec">
+    <div class="sl">Domain Health</div>
+    <div class="dg">
+      <div class="tt-wrap" style="display:block">
+        <div class="dbox" id="db-i"><div class="dn" style="color:var(--ifd)">IFD</div><div class="dv" style="color:var(--ifd)" id="dv-i">0.28</div><div class="ds" id="ds-i">NOMINAL</div></div>
+        <div class="tt" style="width:200px;left:105%"><div class="tt-title">IFD — INFRASTRUCTURE DEPENDENCY</div><div class="tt-body">Stress on physical and network infrastructure — data centres, OT systems, communication pathways. Rises when ICS/SCADA systems are under active threat or when infrastructure options are deferred.</div><div class="tt-thresh">⚠ CASCADE ≥0.70 · weight: 0.25 in g-GCC</div></div>
+      </div>
+      <div class="tt-wrap" style="display:block">
+        <div class="dbox" id="db-s"><div class="dn" style="color:var(--swd)">SWD</div><div class="dv" style="color:var(--swd)" id="dv-s">0.31</div><div class="ds" id="ds-s">NOMINAL</div></div>
+        <div class="tt" style="width:200px;left:105%"><div class="tt-title">SWD — SOFTWARE DEPENDENCY</div><div class="tt-body">Stress propagating through software supply chain pathways — OSS libraries, vendor packages, CI/CD pipelines. Highest-weighted domain (0.40) because software compromise has the broadest blast radius.</div><div class="tt-thresh">⚠ CASCADE ≥0.70 · weight: 0.40 in g-GCC</div></div>
+      </div>
+      <div class="tt-wrap" style="display:block">
+        <div class="dbox" id="db-c"><div class="dn" style="color:var(--sc)">SCTL</div><div class="dv" style="color:var(--sc)" id="dv-c">0.44</div><div class="ds" id="ds-c">ELEVATED</div></div>
+        <div class="tt" style="width:200px;left:105%"><div class="tt-title">SCTL — SUPPLY CHAIN TRUST LAYER</div><div class="tt-body">Overall trust integrity across the vendor ecosystem — τ_bridge, τ_edge, SBOM coverage, and HHI concentration combined. ELEVATED here means you are approaching the SCTL cascade threshold where vendor trust failures propagate across domains.</div><div class="tt-thresh">⚠ CASCADE ≥0.70 · weight: 0.25 in g-GCC</div></div>
+      </div>
+      <div class="tt-wrap" style="display:block">
+        <div class="dbox" id="db-g"><div class="dn" style="color:var(--gov)">GOV</div><div class="dv" style="color:var(--gov)" id="dv-g">0.22</div><div class="ds" id="ds-g">NOMINAL</div></div>
+        <div class="tt" style="width:200px;left:105%"><div class="tt-title">GOV — GOVERNANCE DOMAIN</div><div class="tt-body">Institutional and normative governance stress — decision authority clarity, regulatory compliance posture, allied coordination quality. Rises when decisions defer accountability or bypass established governance frameworks.</div><div class="tt-thresh">⚠ CASCADE ≥0.70 · Drives Q_norm and Q_coord in Ψ_v2</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="lsec">
+    <div class="sl">Intel Tokens <span style="font-weight:400;color:var(--txd)">— spend before deciding</span></div>
+    <div class="trow2" id="trow2">
+      <div class="tt-wrap">
+        <div class="itk av" onclick="spendTok(this)">🔍</div>
+        <div class="tt"><div class="tt-title">TECHNICAL OBSERVABLE</div><div class="tt-body">Reveals a Stratum I sensor reading — τ_bridge degradation rate, SBOM coverage gap, or component provenance score. Use when you need to assess blast radius before deciding.</div><div class="tt-thresh">Maps to: SAD · STI capabilities · Stratum II</div></div>
+      </div>
+      <div class="tt-wrap">
+        <div class="itk av" onclick="spendTok(this)">📡</div>
+        <div class="tt"><div class="tt-title">ADVERSARIAL SIGNAL</div><div class="tt-body">Reveals adversary π_A confidence or Q-value reading — how certain the threat actor is about your posture. Use when you need to gauge attack timing and intent before committing resources.</div><div class="tt-thresh">Maps to: ASI · IIC capabilities · Stratum II</div></div>
+      </div>
+      <div class="tt-wrap">
+        <div class="itk av" onclick="spendTok(this)">⬡</div>
+        <div class="tt"><div class="tt-title">GOVERNANCE QUALITY</div><div class="tt-body">Reveals a Ψ_v2 component trajectory — which Q-dimension (coord, norm, sctl) is most at risk from inaction. Use to understand which governance lever has the highest marginal value before deciding.</div><div class="tt-thresh">Maps to: NDM · ESI capabilities · Stratum II</div></div>
+      </div>
+    </div>
+    <div class="th2" id="th2">3 tokens · reveals hidden intel before you decide</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.49rem;color:rgba(255,255,255,.2);margin-top:3px;line-height:1.5">Hover each token for details · Tokens reset each turn</div>
+  </div>
+  <div class="lsec">
+    <div class="sl">Threat Metrics</div>
+    <div class="trow tt-wrap tt-left" style="display:flex">
+      <div class="tlbl" style="cursor:default">SBOM-VIS</div><div class="tbo"><div class="tbf" id="tb-s" style="width:85%;background:var(--swd)"></div></div><div class="tv" id="tv-s" style="color:var(--swd)">85%</div>
+      <div class="tt"><div class="tt-title">SBOM-VIS — SOFTWARE BOM VISIBILITY</div><div class="tt-body">Percentage of vendor dependency tree covered by machine-readable Software Bills of Materials. Gaps here are the primary entry vector for SC-SBOM supply chain compromise — the adversary exploits what you cannot see.</div><div class="tt-thresh">⚠ CRITICAL &lt;40% · HIGH &lt;70% · NOMINAL ≥85%<br>Drives: SC-SBOM stressor · Q_sctl · EO 14028</div></div>
+    </div>
+    <div class="trow tt-wrap tt-left" style="display:flex">
+      <div class="tlbl" style="cursor:default">SC-CONC (HHI)</div><div class="tbo"><div class="tbf" id="tb-h" style="width:18%;background:var(--lo)"></div></div><div class="tv" id="tv-h" style="color:var(--lo)">0.18</div>
+      <div class="tt"><div class="tt-title">SC-CONC — VENDOR CONCENTRATION (HHI)</div><div class="tt-body">Herfindahl-Hirschman Index measuring vendor concentration across your critical supply chain. A single vendor controlling a large share creates a single point of failure. This metric directly maps to EO 14028 and EU CRA vendor diversification obligations.</div><div class="tt-thresh">⚠ CRITICAL &gt;0.50 · HIGH &gt;0.30 · NOMINAL &lt;0.25<br>Drives: SC-CONC stressor · FRACTURE POINT scenario</div></div>
+    </div>
+    <div class="trow tt-wrap tt-left" style="display:flex">
+      <div class="tlbl" style="cursor:default">SC-GREY</div><div class="tbo"><div class="tbf" id="tb-g" style="width:5%;background:var(--lo)"></div></div><div class="tv" id="tv-g" style="color:var(--lo)">5%</div>
+      <div class="tt"><div class="tt-title">SC-GREY — GREY-MARKET COMPONENT EXPOSURE</div><div class="tt-body">Percentage of OT/ICS components with unverified or non-authorized provenance. Even low exposure is dangerous — in IRONCLAD SIEGE, 5% grey-market presence is the implant entry vector. Hardware BOM completeness is the primary control.</div><div class="tt-thresh">⚠ CRITICAL &gt;30% · HIGH &gt;15% · NOMINAL &lt;10%<br>Drives: SC-GREY stressor · IRONCLAD SIEGE scenario</div></div>
+    </div>
+    <div class="trow tt-wrap tt-left" style="display:flex">
+      <div class="tlbl" style="cursor:default">PATCH-VEL</div><div class="tbo"><div class="tbf" id="tb-p" style="width:90%;background:var(--swd)"></div></div><div class="tv" id="tv-p" style="color:var(--swd)">90%</div>
+      <div class="tt"><div class="tt-title">PATCH-VEL — PATCH VELOCITY</div><div class="tt-body">Proportion of systems meeting their patch SLA window. OT/ICS systems with no available patch pathway are separately tracked as SC-PATCH-EOL. Decline here accelerates T_Orion — the time-to-exploitation clock — across all active scenarios.</div><div class="tt-thresh">⚠ CRITICAL &lt;40% · HIGH &lt;65% · NOMINAL ≥85%<br>Drives: SC-PATCH stressor · CISA KEV compliance</div></div>
+    </div>
+  </div>
+  <!-- GOVERNANCE ARTIFACTS -->
+  <div class="lsec" id="art-sec">
+    <div class="sl" style="color:var(--gl)">Governance Artifacts</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.51rem;color:rgba(255,255,255,.3);line-height:1.55;margin-bottom:7px">Upload SOPs, tabletop reports, IR docs, or SOC reports to stress-test against E-AGPO-HT framework</div>
+    <label id="art-label" style="display:flex;align-items:center;gap:6px;background:rgba(184,138,0,.08);border:1px dashed rgba(184,138,0,.35);border-radius:4px;padding:7px 9px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(184,138,0,.14)'" onmouseout="this.style.background='rgba(184,138,0,.08)'">
+      <span style="font-size:.9rem">📄</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:rgba(255,255,255,.5);flex:1">Load artifact (.txt, .md, .docx, .pdf)</span>
+      <input type="file" id="art-file" accept=".txt,.md,.pdf,.docx" style="display:none" onchange="handleArtifact(this)">
+    </label>
+    <div id="art-status" style="display:none;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:.51rem;color:rgba(255,255,255,.38);line-height:1.6"></div>
+  </div>
+  <div class="lsec" style="padding-bottom:4px"><div class="sl">Game Log</div></div>
+  <div class="elog" id="elog">
+    <div class="le"><div class="lt">T-0</div><div class="ltg S">SYS</div><div class="lm">Wargame ready — select a scenario and begin</div></div>
+  </div>
+</div>
+
+<!-- CENTRE -->
+<div class="gboard">
+  <div class="sbar" id="sbar">
+    <span style="font-size:1.05rem">🎯</span>
+    <div class="sbn" id="sbn">MIRAGE CHAIN</div>
+    <div class="sbd" id="sbd">Software supply-chain compromise cascading to ICS/OT — SolarWinds-class · w_IFD=0.25 · w_SWD=0.40 · λ=0.15</div>
+    <div id="schips" style="display:flex;gap:4px">
+      <div class="sch" style="border-color:var(--swd);color:var(--swd)">SC-SBOM</div>
+      <div class="sch" style="border-color:var(--sc);color:var(--sc)">SC-CONC</div>
+    </div>
+  </div>
+  <div class="garea" id="ga" class="garea"></div>
+  <div class="ego" id="ego">
+    <div class="egb">
+      <div class="egi" id="egi">🏛️</div>
+      <div class="egt" id="egt">Governance Threshold Met</div>
+      <div class="egp" id="egp">0.72</div>
+      <div class="egpl">Ψ_v2 FINAL DECISION-PATH QUALITY</div>
+      <div class="egs" id="egs">Your governance decisions maintained resilience above the stability floor.</div>
+      <button class="egbtn" onclick="closeEg()">↺ Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="rpanel">
+  <div class="rsec">
+    <div class="sl">Ψ_v2 — Decision Quality</div>
+    <div class="plb">
+      <div class="plv" id="plv" style="color:var(--swd)">0.74</div>
+      <div class="pll">DECISION-PATH QUALITY · WIN THRESHOLD: 0.50</div>
+      <div class="ptb"><div class="ptbf" id="ptbf" style="width:74%;background:var(--swd)"></div><div class="ptbl" title="Win threshold: 0.50"></div></div>
+    </div>
+  </div>
+  <div class="rsec">
+    <div class="sl">Governance Confidence</div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Technical Resilience</span><span class="gtv" style="color:var(--swd)" id="gtv-t">82%</span></div><div class="gtbo"><div class="gtbf" id="gtb-t" style="width:82%;background:var(--swd)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">TECHNICAL RESILIENCE</div><div class="tt-body">Composite of detection capability, infrastructure hardening, and patch velocity. Declines when you accept operational risk options or defer technical remediation.</div><div class="tt-thresh">Stratum I → SAD + SRA → Stratum II</div></div>
+    </div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Regulatory Compliance</span><span class="gtv" style="color:var(--ifd)" id="gtv-r">74%</span></div><div class="gtbo"><div class="gtbf" id="gtb-r" style="width:74%;background:var(--ifd)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">REGULATORY COMPLIANCE</div><div class="tt-body">Reflects adherence to NIS2, EO 14028, CISA KEV, and EU CRA obligations. Rises when you choose options that mandate SBOM delivery or formal vendor notification. Falls when you accept risk without documentation.</div><div class="tt-thresh">Drives: Q_norm component of Ψ_v2</div></div>
+    </div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Diplomatic Coordination</span><span class="gtv" style="color:var(--gov)" id="gtv-d">65%</span></div><div class="gtbo"><div class="gtbf" id="gtb-d" style="width:65%;background:var(--gov)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">DIPLOMATIC COORDINATION</div><div class="tt-body">Inter-institutional coordination quality with allied CSIRTs, NATO partners, and international bodies. Rises when you choose options involving STIX/TAXII sharing or allied briefings. Key for multilateral coordination scenarios.</div><div class="tt-thresh">Drives: Q_coord component of Ψ_v2</div></div>
+    </div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Public / Sector Trust</span><span class="gtv" style="color:var(--gl)" id="gtv-p">70%</span></div><div class="gtbo"><div class="gtbf" id="gtb-p" style="width:70%;background:var(--gl)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">PUBLIC / SECTOR TRUST</div><div class="tt-body">Stakeholder and public confidence in institutional governance. Declines when incidents are poorly communicated or when operational disruption is high. Feeds cultural acceptance index.</div><div class="tt-thresh">Drives: Q_norm + cultural acceptance · Stratum I</div></div>
+    </div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Supply Chain Trust (τ̄)</span><span class="gtv" style="color:var(--sc)" id="gtv-sc">88%</span></div><div class="gtbo"><div class="gtbf" id="gtb-sc" style="width:88%;background:var(--sc)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">SUPPLY CHAIN TRUST (τ̄)</div><div class="tt-body">Mean τ (tau) trust score across the vendor dependency tree. Aggregates τ_bridge (IFD path) and τ_edge (SWD path). When this falls below 0.40 the SCTL cascade threshold approaches — catastrophic multi-domain failure becomes probable.</div><div class="tt-thresh">⚠ CRITICAL &lt;0.40 · Drives: g-GCC master score</div></div>
+    </div>
+  </div>
+  <div class="rsec">
+    <div class="sl">Regulatory Obligations</div>
+    <div class="reg-item tt-wrap" style="display:flex"><div class="reg-dot" id="rd-e" style="background:var(--swd)"></div><div style="flex:1"><div class="reg-nm">EO 14028 · SBOM Delivery</div><div class="reg-st" id="rs-e">Compliant — coverage 85%</div></div>
+      <div class="tt" style="width:215px"><div class="tt-title">EO 14028 · SBOM DELIVERY</div><div class="tt-body">Executive Order 14028 mandates machine-readable SBOMs for software sold to the US federal government. Your decisions in-game affect SBOM coverage — deferring vendor audits reduces this score toward non-compliance.</div><div class="tt-thresh">Compliant ≥80% · At-risk 60–80% · Non-compliant &lt;60%</div></div>
+    </div>
+    <div class="reg-item tt-wrap" style="display:flex"><div class="reg-dot" id="rd-n" style="background:var(--swd)"></div><div style="flex:1"><div class="reg-nm">NIS2 · 72hr Notification</div><div class="reg-st" id="rs-n">Window open — not triggered</div></div>
+      <div class="tt" style="width:215px"><div class="tt-title">NIS2 · 72-HOUR NOTIFICATION</div><div class="tt-body">EU NIS2 Directive requires notification to national authorities within 72 hours of becoming aware of a significant incident. Each turn represents roughly 6–12 hours. Choosing containment-only options without notification triggers non-compliance.</div><div class="tt-thresh">Window opens on T-1 detection · Expires T-6 (~72hr)</div></div>
+    </div>
+    <div class="reg-item tt-wrap" style="display:flex"><div class="reg-dot" id="rd-k" style="background:var(--gl)"></div><div style="flex:1"><div class="reg-nm">CISA KEV · Patch SLA</div><div class="reg-st" id="rs-k">3 entries approaching 14d SLA</div></div>
+      <div class="tt" style="width:215px"><div class="tt-title">CISA KEV · PATCH SLA</div><div class="tt-body">CISA Known Exploited Vulnerabilities catalog mandates patching within 14 days for federal agencies. Three entries approaching SLA means your PATCH-VEL will decline if you deprioritise remediation options in upcoming turns.</div><div class="tt-thresh">SLA breach directly degrades PATCH-VEL and Q_sctl</div></div>
+    </div>
+    <div class="reg-item tt-wrap" style="display:flex"><div class="reg-dot" id="rd-c" style="background:var(--swd)"></div><div style="flex:1"><div class="reg-nm">EU CRA · Vendor Contracts</div><div class="reg-st" id="rs-c">SBOM obligations: 6/9 vendors</div></div>
+      <div class="tt" style="width:215px"><div class="tt-title">EU CYBER RESILIENCE ACT · VENDOR CONTRACTS</div><div class="tt-body">The EU CRA requires vendors of digital products to maintain and deliver SBOMs and disclose vulnerabilities. 6 of 9 vendors are contractually obligated — 3 remain outside scope, creating SC-CONC exposure that decisions can close or widen.</div><div class="tt-thresh">Full compliance = 9/9 · Drives SC-CONC HHI trajectory</div></div>
+    </div>
+  </div>
+  <div class="rsec">
+    <div class="sl">Policy Stress</div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Cultural Acceptance</span><span class="gtv" id="gtv-ca" style="color:var(--txm)">71%</span></div><div class="gtbo"><div class="gtbf" id="gtb-ca" style="width:71%;background:var(--txm)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">CULTURAL ACCEPTANCE</div><div class="tt-body">Societal and organisational willingness to accept governance interventions — monitoring expansion, vendor restrictions, mandatory disclosure. Low acceptance raises the political cost of technically correct decisions.</div><div class="tt-thresh">Stratum I NOF · feeds Q_norm · E-AGPO-HT Stratum II</div></div>
+    </div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Misinformation Pressure</span><span class="gtv" id="gtv-mp" style="color:var(--crit)">28%</span></div><div class="gtbo"><div class="gtbf" id="gtb-mp" style="width:28%;background:var(--crit)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">MISINFORMATION PRESSURE</div><div class="tt-body">Active adversarial narrative operations degrading public attribution confidence and allied consensus. Rising pressure reduces the decision window before political constraints override technical response options.</div><div class="tt-thresh">⚠ HIGH &gt;50% erodes Q_coord and public trust simultaneously</div></div>
+    </div>
+    <div class="gtr tt-wrap" style="display:block">
+      <div class="gth2"><span class="gtn" style="cursor:default">Allied Coord. Quality</span><span class="gtv" id="gtv-aq" style="color:var(--gov)">68%</span></div><div class="gtbo"><div class="gtbf" id="gtb-aq" style="width:68%;background:var(--gov)"></div></div>
+      <div class="tt" style="width:210px"><div class="tt-title">ALLIED COORDINATION QUALITY</div><div class="tt-body">Real-time quality of CSIRT-to-CSIRT and NATO/UN partner coordination. Reflects shared threat intelligence fidelity, notification timeliness, and joint response alignment. Central to Budapest Convention supply chain provisions.</div><div class="tt-thresh">Drives: Q_coord · IIC Stratum II capability · Ψ_v2</div></div>
+    </div>
+  </div>
+  <div class="rsec" style="padding-bottom:4px"><div class="sl">Turn Decision Log</div></div>
+  <div class="gpf" id="gpf"><div style="font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txd);padding:7px 0;text-align:center">Decisions appear here</div></div>
+</div>
+</div>
+
+<!-- ══ ABOUT MODAL ══ -->
+<div id="about-modal" style="position:fixed;inset:0;background:rgba(14,24,37,.72);display:flex;align-items:center;justify-content:center;z-index:900;opacity:0;pointer-events:none;transition:opacity .3s">
+  <div style="max-width:540px;width:94%;background:#fff;border:1px solid var(--b2);border-radius:8px;box-shadow:var(--sh-lg);padding:26px 28px;position:relative;max-height:90vh;overflow-y:auto">
+    <button onclick="document.getElementById('about-modal').classList.remove('on')" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:var(--txd);cursor:pointer">✕</button>
+    <div style="display:flex;align-items:center;gap:11px;margin-bottom:15px;padding-bottom:13px;border-bottom:1px solid var(--b1)">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="rgba(0,90,158,0.18)" stroke-width="0.5"/><circle cx="8" cy="10" r="1.9" fill="#4a9ede" opacity="0.9"/><circle cx="24" cy="10" r="1.9" fill="#4a9ede" opacity="0.9"/><circle cx="8" cy="22" r="1.5" fill="#4ec98a" opacity="0.8"/><circle cx="24" cy="22" r="1.5" fill="#4ec98a" opacity="0.8"/><circle cx="16" cy="16" r="1.6" fill="#1a2535" opacity="0.95"/><line x1="8" y1="10" x2="16" y2="16" stroke="rgba(74,158,222,0.3)" stroke-width="0.5"/><line x1="24" y1="10" x2="16" y2="16" stroke="rgba(74,158,222,0.3)" stroke-width="0.5"/><line x1="8" y1="22" x2="16" y2="16" stroke="rgba(78,201,138,0.3)" stroke-width="0.5"/><line x1="24" y1="22" x2="16" y2="16" stroke="rgba(78,201,138,0.3)" stroke-width="0.5"/></svg>
+      <div>
+        <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:1rem;color:var(--txh)">Auracelle Orion v4</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);letter-spacing:.08em;margin-top:2px">CYBER GOVERNANCE WARGAMING SIMULATION · AURACELLE AI GOVERNANCE LABS · 2026</div>
+      </div>
+    </div>
+    <p style="font-size:.8rem;color:var(--tx);line-height:1.7;margin-bottom:13px">Auracelle Orion v4 is a turn-based cyber governance wargaming simulation that stress-tests policy decisions across realistic supply chain attack scenarios. Each 5-turn scenario compresses a full incident lifecycle — from initial SCTL entry through governance consolidation — into a structured decision environment that quantifies the quality of your governance choices using the <strong>E-AGPO-HT v2.0</strong> framework.</p>
+    <div style="background:var(--bg2);border:1px solid var(--b1);border-radius:5px;padding:10px 13px;margin-bottom:13px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--ifd);letter-spacing:.1em;margin-bottom:6px">E-AGPO-HT v2.0 — MATHEMATICAL FOUNDATION</div>
+      <p style="font-size:.73rem;color:var(--txm);line-height:1.65">The simulation is powered by the <strong style="color:var(--txh)">E-AGPO-HT v2.0</strong> framework (Evans AI Governance Policy Optimization - Human-Technology interaction), a proprietary 3-stratum wargaming intelligence architecture. The <strong style="color:var(--txh)">g-GCC</strong> (General Governance Wargaming Capacity) master score at Stratum III aggregates 7 BGC capabilities and 4 ACC AI factors from Stratum II, which are in turn driven by ~40 Narrow Operational Factors at Stratum I. Decision quality is scored by <strong style="color:var(--txh)">Ψ_v2</strong> — a composite index across technical, normative, coordinative, structural, adaptive, and diplomatic governance dimensions.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:var(--bg0);border:1px solid var(--b1);border-radius:4px;padding:8px 10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--swd);letter-spacing:.08em;margin-bottom:4px">HOW TO PLAY</div>
+        <div style="font-size:.69rem;color:var(--txm);line-height:1.55">① Spend intel tokens to reveal hidden info &nbsp;② Choose from 4 governance options &nbsp;③ Review E-AGPO-HT consequences &nbsp;④ Aim Ψ_v2 ≥ 0.50 · Load your own governance artifacts to personalise the baseline</div>
+      </div>
+      <div style="background:var(--bg0);border:1px solid var(--b1);border-radius:4px;padding:8px 10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--gov);letter-spacing:.08em;margin-bottom:4px">POLICY RELEVANCE</div>
+        <div style="font-size:.69rem;color:var(--txm);line-height:1.55">Calibrated against <strong style="color:var(--txh)">NIS2 Directive (EU) 2022/2555 · US EO 14028 · CISA KEV Catalog · EU Cyber Resilience Act · Budapest Convention (Supply Chain Provisions) · NIST CSF 2.0 GV.SC · OECD Recommendation of the Council on AI (2024) · WEF Global Cybersecurity Outlook 2025</strong>. Scenario scoring maps directly to governance obligations across all eight frameworks.</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:11px;border-top:1px solid var(--b1)">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--txd);line-height:1.8">
+        <strong style="color:var(--txh)">Auracelle AI Governance Labs</strong> · Director & Principal Investigator: Grace Evans<br>
+        UC Berkeley CLTC Non-Resident Senior Fellow · Bath Spa University PhD Candidate<br>
+        <span style="color:var(--txd)">© 2026 Grace Evans · Proprietary IP · All rights reserved</span>
+      </div>
+      <button onclick="document.getElementById('about-modal').classList.remove('on')" style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 18px;border:1.5px solid var(--accent);border-radius:4px;color:var(--accent);background:var(--ifdd);cursor:pointer;white-space:nowrap;margin-left:14px">Begin ›</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ARTIFACT ANALYSIS MODAL ══ -->
+<div id="art-modal" style="position:fixed;inset:0;background:rgba(14,24,37,.72);display:flex;align-items:center;justify-content:center;z-index:900;opacity:0;pointer-events:none;transition:opacity .3s">
+  <div style="max-width:620px;width:94%;background:#fff;border:1px solid var(--b2);border-radius:8px;box-shadow:var(--sh-lg);padding:24px 26px;position:relative;max-height:88vh;overflow-y:auto">
+    <button onclick="document.getElementById('art-modal').classList.remove('on')" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.1rem;color:var(--txd);cursor:pointer">✕</button>
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--b1)">
+      <span style="font-size:1.2rem">📋</span>
+      <div>
+        <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:.95rem;color:var(--txh)" id="art-modal-title">Governance Artifact Analysis</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--txd);letter-spacing:.08em;margin-top:2px">E-AGPO-HT v2.0 FRAMEWORK MAPPING · STRESS-TEST BASELINE</div>
+      </div>
+    </div>
+    <div id="art-modal-body" style="font-size:.78rem;color:var(--tx);line-height:1.65">
+      <div style="text-align:center;padding:24px;color:var(--txd);font-family:'JetBrains Mono',monospace;font-size:.6rem">Analysing document…</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:14px;margin-top:4px;border-top:1px solid var(--b1)">
+      <button id="art-download-btn" onclick="downloadArtifactReport()" style="display:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 16px;border:1.5px solid var(--swd);border-radius:4px;color:var(--swd);background:var(--swdd);cursor:pointer;transition:all .2s" onmouseover="this.style.background='#d0ead8'" onmouseout="this.style.background='var(--swdd)'">⬇ Download Report</button>
+      <span id="art-download-spacer"></span>
+      <button onclick="document.getElementById('art-modal').classList.remove('on')" style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 16px;border:1.5px solid var(--b2);border-radius:4px;color:var(--txm);background:var(--bg2);cursor:pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<style>
+#about-modal.on,#art-modal.on{opacity:1!important;pointer-events:all!important;}
+.rpanel .rsec .sl{color:rgba(255,255,255,.28)!important}
+/* Right panel section label override for light panel */
+.rpanel .sl{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--txd)!important;letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px;display:block;}
+.rpanel .plv{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.85rem;line-height:1;}
+.rpanel .pll{font-family:'JetBrains Mono',monospace;font-size:.47rem;color:var(--txd);letter-spacing:.09em;margin-top:2px;line-height:1.4;}
+</style>
+
+<script>
+// ═══════════════════════════════════════════════
+//  ORION v4  ·  Wargaming Engine
+//  E-AGPO-HT v2.0  ·  Evans 2026
+//  Auracelle AI Governance Labs · 2026
+// ═══════════════════════════════════════════════
+const GS={
+  scen:'mirage',tidx:0,turn:0,
+  gifd:.28,gswd:.31,scts:.44,
+  wi:.25,ws:.40,wc:.25,lam:.15,
+  sbom:85,hhi:.18,grey:5,pv:90,
+  tech:82,reg:74,dip:65,pub:70,sci:88,
+  cult:71,mis:28,ally:68,
+  qt:.82,qc:.68,qn:.74,qsc:.80,qa:.71,qd:.65,
+  def:85,adv:12,
+  decisions:[],toks:0,revealed:[],selOpt:null
+};
+
+const SC={
+  mirage:{nm:'MIRAGE CHAIN',arch:'SolarWinds-class',
+    desc:'Software supply-chain compromise cascading to ICS/OT · w_IFD=0.25 · w_SWD=0.40 · λ=0.15',
+    wi:.25,ws:.40,wc:.30,lam:.15,
+    chips:[{c:'var(--swd)',l:'SC-SBOM'},{c:'var(--sc)',l:'SC-CONC'},{c:'var(--ifd)',l:'IFD/SWD'}],
+    ini:{sbom:85,hhi:.18,grey:5,pv:90,gifd:.28,gswd:.31,scts:.44},
+    turns:['m1','m2','m3','m4','m5']},
+  ironclad:{nm:'IRONCLAD SIEGE',arch:'Industroyer-class',
+    desc:'OT/ICS targeted attack via grey-market firmware implants · w_IFD=0.55 · w_SWD=0.20 · λ=0.10',
+    wi:.55,ws:.20,wc:.15,lam:.10,
+    chips:[{c:'var(--crit)',l:'SC-GREY'},{c:'var(--ifd)',l:'HW-PROV'},{c:'var(--sc)',l:'SC-PATCH'}],
+    ini:{sbom:72,hhi:.31,grey:28,pv:55,gifd:.41,gswd:.22,scts:.62},
+    turns:['i1','i2','i3','i4','i5']},
+  fracture:{nm:'FRACTURE POINT',arch:'XZ Utils-class',
+    desc:'Cloud-native dependency poisoning with CSIRT coordination failure · w_IFD=0.15 · w_SWD=0.50 · λ=0.05',
+    wi:.15,ws:.50,wc:.30,lam:.05,
+    chips:[{c:'var(--swd)',l:'SC-SBOM'},{c:'var(--gov)',l:'Q_coord'},{c:'var(--swd)',l:'DEP-TRST'}],
+    ini:{sbom:55,hhi:.52,grey:8,pv:70,gifd:.18,gswd:.45,scts:.58},
+    turns:['f1','f2','f3','f4','f5']},
+  phantom:{nm:'PHANTOM CIRCUIT',arch:'Nation-state implant',
+    desc:'Long-duration hardware implant targeting NC3-adjacent OT · w_IFD=0.40 · w_SWD=0.25 · λ=0.20',
+    wi:.40,ws:.25,wc:.25,lam:.20,
+    chips:[{c:'var(--crit)',l:'SC-GREY'},{c:'var(--ifd)',l:'HW-BOM'},{c:'var(--gov)',l:'Attribution'}],
+    ini:{sbom:78,hhi:.38,grey:42,pv:80,gifd:.52,gswd:.28,scts:.71},
+    turns:['p1','p2','p3','p4','p5']}
+};
+
+// Helper to make option objects
+function opt(id,letter,title,col,body,trades,fx){return{id,letter,title,col,body,trades,fx};}
+function tr(c,l){return{c,l};}
+
+const T={
+m1:{title:'SCTL Entry: Vendor Registry Compromise',badge:{c:'var(--sc)',l:'SCTL · SC-SBOM'},sev:'HIGH',
+  desc:'At 03:14 UTC, threat intelligence flags a malicious update published to a third-party ML model package registry 6 hours ago. SBOM coverage for this vendor: 0% — no baseline exists. Three ML inference consumers may have ingested poisoned model weights. The E-AGCO-HT v2.0 SC-SBOM stressor is fully active. You have 3 intel tokens before you must decide.',
+  chain:[{t:'cc',l:'Vendor Registry'},{t:'ca',l:'→'},{t:'cs',l:'ML Inference'},{t:'ca',l:'→'},{t:'cs',l:'SCADA Ctrl SW'},{t:'ca',l:'→'},{t:'ci',l:'ICS Gateway'},{t:'ca',l:'?→'},{t:'cx',l:'Actuation Risk?'}],
+  intel:[{lbl:'SBOM Coverage (vendor)',val:'0% — no machine-readable baseline exists',col:'var(--crit)'},
+         {lbl:'τ_bridge (SCTL→IFD)',val:'0.41 → actively degrading each tick',col:'var(--hi)'},
+         {lbl:'π_A Q-value (SC-SBOM)',val:'0.94 — adversary at maximum confidence',col:'var(--crit)'}],
+  prompt:'The adversary exploited a zero-visibility supply chain vector. Without an SBOM baseline you cannot confirm which systems consumed the malicious package. Your detection window is closing.',
+  opts:[
+    opt('a','OPT A','Emergency SBOM Generation + Quarantine','var(--swd)','Halt all ML model syncs. Trigger emergency SBOM generation for entire vendor dependency tree. Quarantine all packages pending verification.',
+      [tr('tp','SBOM-VIS: +22%'),tr('tp','Blast radius: contained'),tr('tn','Ops disruption: HIGH'),tr('tn','4hr detection lag')],
+      {sbom:22,hhi:0,grey:0,pv:0,tech:-8,reg:12,dip:5,pub:-5,sci:10,qt:-.05,qc:0,qn:0,qsc:.18,qa:0,qd:0,casc:.15}),
+    opt('b','OPT B','Network Isolation + Threat Hunt','var(--ifd)','Isolate ICS/OT-adjacent systems from the software network. Launch parallel threat hunt across the ML inference layer.',
+      [tr('tp','IFD protected'),tr('tp','Cascade blocked'),tr('tn','OPS-RES: −18%'),tr('tn','SBOM gap persists')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-18,reg:5,dip:0,pub:-8,sci:5,qt:.08,qc:0,qn:0,qsc:0,qa:0,qd:.14,casc:.08}),
+    opt('c','OPT C','Notify Vendor + CSIRT + Continue Ops','var(--gov)','Issue vendor notification. Alert allied CSIRTs via STIX/TAXII. Maintain operations under enhanced monitoring.',
+      [tr('tp','Q_coord: +0.15'),tr('tp','Q_norm: +0.12'),tr('tn','Ops risk persists'),tr('tn','Cascade risk: HIGH')],
+      {sbom:5,hhi:0,grey:0,pv:0,tech:-3,reg:15,dip:18,pub:5,sci:0,qt:0,qc:.15,qn:.12,qsc:0,qa:0,qd:0,casc:.35}),
+    opt('d','OPT D','Accept Risk + Accelerated Patch Deploy','var(--sc)','Accept short-term exposure. Prioritize rapid patching (α_SWD=0.50). Defer SBOM generation to post-incident.',
+      [tr('tp','Patch velocity: HIGH'),tr('tn','SBOM gap persists'),tr('tn','Cascade prob: 0.42'),tr('tn','Governance quality: LOW')],
+      {sbom:0,hhi:0,grey:0,pv:15,tech:5,reg:-8,dip:-5,pub:-3,sci:-8,qt:.05,qc:0,qn:0,qsc:-.12,qa:0,qd:0,casc:.42})
+  ]},
+m2:{title:'SC-GREY Intersection: Grey-Market Firmware Alert',badge:{c:'var(--crit)',l:'IFD · SC-GREY'},sev:'CRITICAL',
+  desc:'While managing the vendor registry compromise, IFD monitoring detects anomalous ICS behavior. Hardware audit reveals three OT components sourced from a non-authorized reseller. Hardware BOM: absent. τ_edge on the ICS firmware path has degraded to 0.09. SC-GREY and SC-SBOM stressors are now simultaneously active — λ cross-domain coupling begins amplifying both signals.',
+  chain:[{t:'cc',l:'Grey-Mkt FW'},{t:'ca',l:'→'},{t:'ci',l:'ICS Gateway'},{t:'ca',l:'λ×'},{t:'cs',l:'SCADA SW'},{t:'ca',l:'→'},{t:'cx',l:'λ COUPLING ACTIVE'}],
+  intel:[{lbl:'Component Provenance',val:'3 units: unauthorized reseller origin',col:'var(--crit)'},
+         {lbl:'λ Coupling Signal',val:'0.15 × 0.41 × 0.49 = 0.030 — amplifying',col:'var(--hi)'},
+         {lbl:'SC-GREY-IMPL probability',val:'0.67 — elevated pre-activation risk',col:'var(--crit)'}],
+  prompt:'Two SCTL stressors (SC-SBOM, SC-GREY) simultaneously active. The λ nonlinear term is feeding cross-domain amplification. Physical hardware inspection requires taking units offline.',
+  opts:[
+    opt('a','OPT A','Physical Quarantine + HW-BOM Sprint','var(--ifd)','Quarantine 3 suspect units. Activate verified hardware from air-gap inventory. Initiate HW-BOM sprint across all OT assets.',
+      [tr('tp','SC-GREY: resolved'),tr('tp','λ coupling: dampened'),tr('tn','OPS-RES: −15%'),tr('tn','24hr recovery window')],
+      {sbom:0,hhi:0,grey:-28,pv:0,tech:-15,reg:10,dip:5,pub:8,sci:18,qt:0,qc:0,qn:0,qsc:.14,qa:0,qd:.12,casc:.10}),
+    opt('b','OPT B','Monitoring + Attribution Hunt','var(--gov)','Keep units operational under enhanced behavioral monitoring. Launch attribution investigation on SC-GREY-JURIS.',
+      [tr('tp','Ops continuity'),tr('tp','Attribution intel'),tr('tn','Implant risk persists'),tr('tn','λ continues building')],
+      {sbom:0,hhi:0,grey:-5,pv:0,tech:5,reg:-3,dip:15,pub:3,sci:-5,qt:0,qc:.10,qn:0,qsc:0,qa:.05,qd:0,casc:.28}),
+    opt('c','OPT C','Escalate to Executive + HITL Authorization','var(--gl)','Escalate to executive authority. Activate HITL guardrail. Authorize emergency single-source procurement.',
+      [tr('tp','HITL active'),tr('tp','Fast replacement'),tr('tn','SC-CONC: temp. +HHI'),tr('tu','Diversity: deferred')],
+      {sbom:0,hhi:.08,grey:-35,pv:0,tech:-5,reg:8,dip:0,pub:10,sci:8,qt:.08,qc:0,qn:0,qsc:0,qa:.18,qd:0,casc:.12}),
+    opt('d','OPT D','Full Domain Separation — IFD + SWD Split','var(--swd)','Implement full IFD/SWD domain separation (v2.0 Q_domain_sep action). Separate escalation chains. Activates ε bonus in Ψ_v2.',
+      [tr('tp','Q_domain_sep: +0.25'),tr('tp','λ coupling: blocked'),tr('tp','Ψ_v2 bonus: +ε'),tr('tn','Coordination overhead')],
+      {sbom:8,hhi:0,grey:-15,pv:0,tech:-8,reg:12,dip:8,pub:5,sci:12,qt:0,qc:.08,qn:0,qsc:0,qa:0,qd:.25,casc:.06})
+  ]},
+m3:{title:'NIS2 72-Hour Window Opens — Regulatory Trigger',badge:{c:'var(--gov)',l:'GOV · Q_norm'},sev:'HIGH',
+  desc:'T+22 hours. Incident scope now triggers the NIS2 72-hour notification obligation. Allied CSIRTs have independently detected related indicators and are requesting joint triage — but your SBOM format is proprietary and incompatible with their CycloneDX-based tools. Q_coord is being penalized for the data interoperability failure.',
+  chain:[{t:'cg',l:'NIS2: T+22h'},{t:'ca',l:'→'},{t:'cg',l:'Q_norm pressure'},{t:'ca',l:'+'},{t:'cg',l:'CSIRT request'},{t:'ca',l:'→'},{t:'cc',l:'SBOM format mismatch'}],
+  intel:[{lbl:'NIS2 Notification Remaining',val:'50 hours — legally binding, non-negotiable',col:'var(--hi)'},
+         {lbl:'Allied CSIRT SBOM Format',val:'CycloneDX required — you: proprietary',col:'var(--crit)'},
+         {lbl:'Q_norm if notification delayed',val:'0.74 → 0.38 projected on SLA breach',col:'var(--crit)'}],
+  prompt:'Simultaneous governance obligations: NIS2 notification, CSIRT coordination, and SBOM format resolution. These are policy-layer stressors — this is where governance wins or loses.',
+  opts:[
+    opt('a','OPT A','File NIS2 + Convert SBOM to CycloneDX','var(--gov)','Submit NIS2 notification immediately. Convert existing SBOM artifacts to CycloneDX for CSIRT sharing. Publish VEX statements.',
+      [tr('tp','Q_norm: +0.20'),tr('tp','Q_coord: +0.18'),tr('tp','Joint triage: enabled'),tr('tn','4hr conversion effort')],
+      {sbom:8,hhi:0,grey:0,pv:0,tech:0,reg:22,dip:18,pub:12,sci:5,qt:0,qc:.18,qn:.20,qsc:0,qa:0,qd:0,casc:.08}),
+    opt('b','OPT B','Request Extension + Legal Review','var(--hi)','Request regulatory extension pending full scope determination. Buys time but risks Q_norm penalty if extension denied.',
+      [tr('tn','Q_norm: −0.10 risk'),tr('tu','Scope accuracy: +10%'),tr('tp','Attribution: +8%'),tr('tn','Allied trust: −5%')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:-10,dip:-5,pub:-8,sci:0,qt:0,qc:0,qn:-.10,qsc:0,qa:.08,qd:0,casc:.18}),
+    opt('c','OPT C','Publish Full Incident SBOM + Sector Advisory','var(--sc)','Go beyond NIS2 minimum — publish full incident SBOM. Issue sector-wide advisory. Win-win: transparency earns regulatory credit and allied trust.',
+      [tr('tp','Q_norm: +0.28'),tr('tp','Sector trust: +20%'),tr('tp','Q_coord: +0.22'),tr('tn','Competitive exposure')],
+      {sbom:15,hhi:0,grey:0,pv:0,tech:3,reg:28,dip:22,pub:22,sci:10,qt:0,qc:.22,qn:.28,qsc:0,qa:0,qd:0,casc:.04}),
+    opt('d','OPT D','Compartmentalize: Mandatory Parties Only','var(--crit)','Notify only legally required parties. Decline CSIRT joint triage to protect attribution data.',
+      [tr('tp','Attribution: protected'),tr('tn','Q_coord: −0.18'),tr('tn','Allied trust: −15%'),tr('tn','Misinformation: +12%')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:5,dip:-18,pub:-15,sci:0,qt:0,qc:-.18,qn:.05,qsc:0,qa:0,qd:0,casc:.25})
+  ]},
+m4:{title:'SC-CONC Cascade: Single-Vendor Exploit Materializes',badge:{c:'var(--sc)',l:'SCTL · SC-CONC'},sev:'CRITICAL',
+  desc:'T+38 hours. Adversary activates a vendor-specific exploit targeting the vendor with HHI=0.74 concentration across your communications stack. 74% of your C2 channels are single-vendor. The λ nonlinear coupling term fires at maximum intensity — the highest amplification event in E-AGCO-HT v2.0.',
+  chain:[{t:'cc',l:'SC-CONC HHI=0.74'},{t:'ca',l:'λ→'},{t:'ci',l:'IFD Comms ×74%'},{t:'ca',l:'+'},{t:'cs',l:'SWD Comms ×74%'},{t:'ca',l:'→'},{t:'cx',l:'DUAL-DOMAIN CASCADE'}],
+  intel:[{lbl:'Systems affected (HHI=0.74)',val:'74% of C2 stack — 9 critical systems',col:'var(--crit)'},
+         {lbl:'λ coupling now: IFD×SWD',val:'0.15 × 0.58 × 0.71 = 0.062 — nonlinear peak',col:'var(--hi)'},
+         {lbl:'SC-CONC-ALTN (alternatives)',val:'2 validated alt. vendors — 72hr lead time',col:'var(--med)'}],
+  prompt:'Highest-severity event. SC-CONC is hardest to remediate in real time — vendor diversification takes 72+ hours. Your decision determines whether the cascade reaches the g-GCC stability floor.',
+  opts:[
+    opt('a','OPT A','Emergency Vendor Diversification','var(--ifd)','Activate validated alternative vendor contracts. Accept 72-hour transition window with degraded capacity.',
+      [tr('tp','HHI: −0.28 in 72hr'),tr('tp','SC-CONC: resolved'),tr('tn','72hr exposure'),tr('tn','Ops degraded: −20%')],
+      {sbom:0,hhi:-.28,grey:0,pv:0,tech:-20,reg:8,dip:5,pub:-5,sci:15,qt:0,qc:0,qn:0,qsc:.15,qa:.08,qd:0,casc:.22}),
+    opt('b','OPT B','Activate Backup Air-Gapped C2','var(--swd)','Switch all critical C2 to air-gapped backup. Immediately removes concentration exposure for critical systems.',
+      [tr('tp','Critical C2: secured'),tr('tp','Cascade: blocked core'),tr('tn','Bandwidth: −45%'),tr('tn','Secondary: exposed')],
+      {sbom:0,hhi:-.15,grey:0,pv:0,tech:-12,reg:5,dip:8,pub:5,sci:20,qt:.12,qc:0,qn:0,qsc:0,qa:0,qd:.08,casc:.14}),
+    opt('c','OPT C','Invoke Contractual Continuity (SC-CONC-CONT)','var(--gov)','Invoke vendor contractual continuity and escrow obligations. File regulatory complaint. Positions for post-incident reform.',
+      [tr('tp','Q_norm: +0.15'),tr('tp','Long-term: resolved'),tr('tn','Short-term: no relief'),tr('tn','Cascade: unchanged now')],
+      {sbom:0,hhi:-.05,grey:0,pv:0,tech:-5,reg:18,dip:10,pub:8,sci:5,qt:0,qc:0,qn:.15,qsc:0,qa:.05,qd:0,casc:.30}),
+    opt('d','OPT D','Full System Isolation + Manual Operations','var(--crit)','Isolate all vendor-dependent systems. Switch to fully manual IFD and SWD operations simultaneously. Stops cascade, maximum disruption.',
+      [tr('tp','Cascade: STOPPED'),tr('tp','λ: zeroed'),tr('tn','Ops: −55%'),tr('tn','Recovery: 48–72hr')],
+      {sbom:0,hhi:-.35,grey:0,pv:0,tech:-55,reg:5,dip:0,pub:-20,sci:25,qt:-.08,qc:0,qn:0,qsc:0,qa:0,qd:.15,casc:.03})
+  ]},
+m5:{title:'Recovery & Governance Consolidation — Final Turn',badge:{c:'var(--lo)',l:'ALL DOMAINS · Recovery'},sev:'MED',
+  desc:'T+72 hours. Immediate threat contained. This final governance decision determines your Ψ_v2 legacy score. The After-Action Review measures your complete 5-turn decision path. Q_sctl is your primary lever now.',
+  chain:[{t:'cs',l:'SBOM remediation'},{t:'ca',l:'+'},{t:'ci',l:'HW-BOM sprint'},{t:'ca',l:'+'},{t:'cg',l:'Policy reform'},{t:'ca',l:'→'},{t:'co',l:'Ψ_v2 final'}],
+  intel:[{lbl:'Current Ψ_v2 trajectory',val:'Computed from your 4 prior decisions',col:'var(--swd)'},
+         {lbl:'Q_sctl recovery opportunity',val:'SBOM contract mandates: +0.22',col:'var(--sc)'},
+         {lbl:'Win-win policy candidate',val:'CycloneDX standard + tiered timelines',col:'var(--gov)'}],
+  prompt:'Your final governance action. What policy legacy does this scenario leave? Your choice determines Q_sctl, Q_norm, and the cultural acceptance index — the win-win policy levers Auracelle identifies.',
+  opts:[
+    opt('a','OPT A','Full SBOM Mandate + CycloneDX Standard','var(--swd)','Mandate SBOM delivery in all vendor contracts (CycloneDX). Enforce 14-day patch SLA. Submit to allied CSIRT WG as international standard.',
+      [tr('tp','Q_sctl: +0.22'),tr('tp','Cultural acceptance: +15%'),tr('tp','Interoperability: WIN-WIN'),tr('tn','6-month rollout')],
+      {sbom:25,hhi:-.05,grey:-5,pv:0,tech:5,reg:20,dip:18,pub:15,sci:18,qt:0,qc:0,qn:.15,qsc:.22,qa:0,qd:0,casc:0,final:true}),
+    opt('b','OPT B','Vendor Risk Management Overhaul','var(--ifd)','Restructure VRM: add SC-CONC-HHI tracking, grey-market sourcing controls, HW-BOM requirements. Diversify top-3 concentration vendors.',
+      [tr('tp','SC-CONC: long-term fixed'),tr('tp','HW-PROV: established'),tr('tn','SBOM interop: deferred'),tr('tu','Allied sharing: unchanged')],
+      {sbom:10,hhi:-.20,grey:-20,pv:0,tech:8,reg:15,dip:8,pub:8,sci:20,qt:0,qc:0,qn:0,qsc:.15,qa:.10,qd:0,casc:0,final:true}),
+    opt('c','OPT C','Geopolitical Attribution + International Policy','var(--gov)','Publish attribution findings. Brief NATO/UN. Propose international supply chain integrity treaty.',
+      [tr('tp','Geopolitical: strong signal'),tr('tp','International norms: +20%'),tr('tn','Technical: deferred'),tr('tn','Domestic fix: slow')],
+      {sbom:5,hhi:-.05,grey:-10,pv:0,tech:0,reg:10,dip:28,pub:20,sci:5,qt:0,qc:.22,qn:.18,qsc:0,qa:0,qd:0,casc:0,final:true}),
+    opt('d','OPT D','Document Lessons — No Structural Reform','var(--txm)','Document lessons. Return to normal operations. No changes to vendor contracts, SBOM program, or hardware BOM requirements.',
+      [tr('tn','Q_sctl: no improvement'),tr('tn','Structural risk: persists'),tr('tn','Recurrence: HIGH'),tr('tu','Ops disruption: none')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:5,reg:0,dip:0,pub:-5,sci:0,qt:0,qc:0,qn:0,qsc:-.08,qa:0,qd:0,casc:0,final:true})
+  ]},
+// ════ IRONCLAD SIEGE ════
+i1:{title:'Grey-Market Hardware: 28% of OT Stack Suspect',badge:{c:'var(--crit)',l:'IFD · SC-GREY'},sev:'CRITICAL',
+  desc:'Hardware audit reveals 28% of critical OT/ICS components were sourced from non-authorized channels. Hardware BOM completeness: 0%. Three systems show behavioral anomalies consistent with SC-GREY-IMPL pre-activation staging.',
+  chain:[{t:'cc',l:'Grey-Mkt FW'},{t:'ca',l:'→'},{t:'ci',l:'ICS ×31 units'},{t:'ca',l:'→'},{t:'cx',l:'Pre-activation staging?'}],
+  intel:[{lbl:'Suspect components',val:'31 units across 3 facilities — no HW-BOM',col:'var(--crit)'},
+         {lbl:'Behavioral anomalies',val:'Timing channel irregularities — pre-activation',col:'var(--hi)'},
+         {lbl:'SC-GREY-IMPL probability',val:'0.67 — elevated implant risk',col:'var(--crit)'}],
+  prompt:'Your IFD is compromised via grey-market supply chain. Physical inspection requires taking critical OT systems offline. What is your response?',
+  opts:[
+    opt('a','OPT A','Full Physical Inspection + Replacement','var(--ifd)','Take all suspect units offline. Physical inspection. Replace with verified hardware. 48-hour recovery window.',
+      [tr('tp','SC-GREY: resolved'),tr('tn','OPS-RES: −40%'),tr('tn','48hr downtime')],
+      {sbom:0,hhi:0,grey:-38,pv:0,tech:-40,reg:15,dip:5,pub:0,sci:25,qt:0,qc:0,qn:0,qsc:.18,qa:0,qd:.10,casc:.08}),
+    opt('b','OPT B','Behavioral Monitoring + Staged Replacement','var(--gov)','Continue under enhanced monitoring. Stage phased hardware replacement over 2 weeks.',
+      [tr('tp','Ops: maintained'),tr('tn','Implant risk: 2 weeks'),tr('tn','λ coupling: builds')],
+      {sbom:0,hhi:0,grey:-10,pv:0,tech:5,reg:0,dip:5,pub:0,sci:-5,qt:0,qc:0,qn:0,qsc:0,qa:.08,qd:0,casc:.35}),
+    opt('c','OPT C','Invoke HITL + Emergency Authority','var(--gl)','Escalate to executive. Activate HITL guardrail for all affected IFD systems. Authorize emergency procurement.',
+      [tr('tp','HITL: active'),tr('tp','Authority: clear'),tr('tn','Single-source: HHI risk')],
+      {sbom:0,hhi:.12,grey:-30,pv:0,tech:-15,reg:10,dip:0,pub:10,sci:12,qt:.08,qc:0,qn:0,qsc:0,qa:.20,qd:0,casc:.12}),
+    opt('d','OPT D','Full OT Air-Gap Isolation','var(--crit)','Isolate all OT systems from all networks. Complete air-gap enforcement. Manual operations only.',
+      [tr('tp','Cascade: ZERO'),tr('tn','Ops: −60%'),tr('tn','Recovery: 72hr')],
+      {sbom:0,hhi:0,grey:-45,pv:0,tech:-60,reg:8,dip:0,pub:-15,sci:30,qt:0,qc:0,qn:0,qsc:0,qa:0,qd:.20,casc:.02})
+  ]},
+i2:{title:'SC-PATCH Temporal Stressor at Ceiling',badge:{c:'var(--sc)',l:'SCTL · SC-PATCH'},sev:'HIGH',
+  desc:'OT-specific patch availability gap: 72% of IFD components have no available patch pathway. SC-PATCH(t) = 1.0 — SLA ceiling breached at 47d/30d. T_Orion is accelerating for both domains.',
+  chain:[{t:'cc',l:'SC-PATCH: 1.0'},{t:'ca',l:'→'},{t:'ci',l:'OT ×72%: no patch'},{t:'ca',l:'→'},{t:'cx',l:'Exploitation window: OPEN'}],
+  intel:[{lbl:'OT patch availability',val:'72% have no available patch pathway',col:'var(--crit)'},
+         {lbl:'SC-PATCH(t) value',val:'1.0 — ceiling breached at 47d / 30d SLA',col:'var(--crit)'},
+         {lbl:'EOL components with active CVEs',val:'18 systems — SC-PATCH-EOL critical',col:'var(--hi)'}],
+  prompt:'SC-PATCH stressor is driving T_Orion time-acceleration. The governance window is narrowing. What is your patch strategy for OT systems with no available patch?',
+  opts:[
+    opt('a','OPT A','Virtual Patching + Compensating Controls','var(--ifd)','Deploy virtual patching and compensating network controls for unpatchable OT components. Document rationale for regulatory compliance.',
+      [tr('tp','Ops: maintained'),tr('tp','Reg: documented'),tr('tn','SC-PATCH: persists'),tr('tu','Risk: formally accepted')],
+      {sbom:0,hhi:0,grey:0,pv:15,tech:-5,reg:10,dip:0,pub:3,sci:8,qt:0,qc:0,qn:0,qsc:.08,qa:0,qd:0,casc:.22}),
+    opt('b','OPT B','Emergency Vendor Escalation + Patch Dev','var(--sc)','Invoke contractual obligation to develop patches within 30 days. File CISA KEV notification. Begin coordinated disclosure.',
+      [tr('tp','Long-term: resolved'),tr('tp','CISA: notified'),tr('tn','30-day exposure'),tr('tn','Vendor cooperation: uncertain')],
+      {sbom:0,hhi:0,grey:0,pv:10,tech:0,reg:18,dip:10,pub:5,sci:5,qt:0,qc:0,qn:.14,qsc:0,qa:0,qd:0,casc:.28}),
+    opt('c','OPT C','System Replacement — Retire EOL Assets','var(--gov)','Retire all EOL OT systems with active CVEs and no patch pathway. Replace with modern alternatives.',
+      [tr('tp','SC-PATCH: resolved'),tr('tp','Long-term resilience'),tr('tn','Cost: HIGH'),tr('tn','6-month program')],
+      {sbom:0,hhi:-.08,grey:0,pv:25,tech:10,reg:15,dip:5,pub:10,sci:20,qt:0,qc:0,qn:0,qsc:.20,qa:0,qd:0,casc:.08}),
+    opt('d','OPT D','Accept Risk + Concentrate Defense','var(--hi)','Accept patch latency risk. Concentrate defensive resources around highest-value targets. Document risk acceptance.',
+      [tr('tp','Resources: focused'),tr('tn','SC-PATCH: ceiling'),tr('tn','Reg: non-compliant risk')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-3,reg:-8,dip:0,pub:-5,sci:-5,qt:0,qc:0,qn:0,qsc:-.08,qa:0,qd:0,casc:.38})
+  ]},
+i3:{title:'Allied CSIRT Attribution Data Request',badge:{c:'var(--gov)',l:'GOV · Q_coord'},sev:'HIGH',
+  desc:'Allied CSIRT partners have detected identical grey-market firmware behavioral patterns in their own networks. They request attribution data, joint analysis, and coordinated response. SC-GREY-JURIS data suggests adversary-state origin.',
+  chain:[{t:'cg',l:'CSIRT request'},{t:'ca',l:'→'},{t:'cc',l:'SC-GREY-JURIS data'},{t:'ca',l:'→'},{t:'cg',l:'Q_coord decision'}],
+  intel:[{lbl:'SC-GREY-JURIS origin',val:'High confidence: adversary state-sponsor',col:'var(--crit)'},
+         {lbl:'Partners requesting data',val:'4 allied CSIRTs — all NIS2 aligned',col:'var(--ifd)'},
+         {lbl:'Capability disclosure risk',val:'Moderate — detection method unique',col:'var(--hi)'}],
+  prompt:'Attribution data sharing is a win-win governance opportunity but carries capability risk. This decision directly determines Q_coord in your final Ψ_v2.',
+  opts:[
+    opt('a','OPT A','Full Attribution Sharing + Joint Hunt','var(--gov)','Share full SC-GREY-JURIS attribution data with all requesting CSIRTs. Launch joint threat hunt via STIX/TAXII.',
+      [tr('tp','Q_coord: +0.22'),tr('tp','Collective defense'),tr('tn','Capability: disclosed')],
+      {sbom:0,hhi:0,grey:-5,pv:0,tech:0,reg:8,dip:25,pub:15,sci:5,qt:0,qc:.22,qn:0,qsc:0,qa:0,qd:0,casc:.10}),
+    opt('b','OPT B','Share IOCs Only — Protect TTPs','var(--ifd)','Share indicators of compromise but not techniques/procedures.',
+      [tr('tp','Q_coord: +0.12'),tr('tp','Capabilities: protected'),tr('tn','Collective defense: partial')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:5,dip:12,pub:8,sci:0,qt:0,qc:.12,qn:0,qsc:0,qa:0,qd:0,casc:.15}),
+    opt('c','OPT C','Propose STIX/TAXII Multilateral Framework','var(--swd)','Propose formal multilateral SC-GREY intelligence sharing framework. Elevates to international policy level.',
+      [tr('tp','Long-term: norms built'),tr('tp','Q_coord: +0.16'),tr('tn','Immediate sharing: delayed')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:10,dip:20,pub:18,sci:5,qt:0,qc:.16,qn:.12,qsc:0,qa:0,qd:0,casc:.12}),
+    opt('d','OPT D','Decline — National Security Classification','var(--crit)','Decline attribution data sharing citing national security classification.',
+      [tr('tn','Q_coord: −0.18'),tr('tn','Allied trust: damaged'),tr('tn','Misinformation: amplified')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:0,dip:-18,pub:-12,sci:0,qt:0,qc:-.18,qn:0,qsc:0,qa:0,qd:0,casc:.20})
+  ]},
+i4:{title:'Physical Actuation Anomaly — HITL Fail-Safe Armed',badge:{c:'var(--crit)',l:'IFD · PHY-INT'},sev:'CRITICAL',
+  desc:'PHY-INT monitoring reports physical actuation anomaly at two ICS nodes. Grey-market firmware implant has activated a control override. Physical consequences are now possible. HITL guardrail is armed.',
+  chain:[{t:'ci',l:'ICS anomaly'},{t:'ca',l:'→'},{t:'cx',l:'Control override'},{t:'ca',l:'→'},{t:'cx',l:'HITL ARMED'}],
+  intel:[{lbl:'Actuation override scope',val:'2 ICS nodes — process control functions',col:'var(--crit)'},
+         {lbl:'HITL guardrail status',val:'ARMED — human confirmation required',col:'var(--hi)'},
+         {lbl:'Physical containment option',val:'Manual override: 8-minute response window',col:'var(--ifd)'}],
+  prompt:'Physical actuation is the highest-consequence IFD event. HITL is armed. Human authority is required.',
+  opts:[
+    opt('a','OPT A','Manual Override + Emergency Stop','var(--ifd)','Invoke HITL authority. Physical emergency stop of affected ICS nodes. Accept production loss. Prevent physical harm.',
+      [tr('tp','Physical harm: prevented'),tr('tp','HITL: correctly used'),tr('tn','Production: stopped'),tr('tp','Q_acc: +0.25')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-30,reg:20,dip:5,pub:18,sci:15,qt:0,qc:0,qn:0,qsc:0,qa:.25,qd:0,casc:.04}),
+    opt('b','OPT B','AI-Assist with HITL Confirmation Each Step','var(--swd)','Use AI decision support with HITL guardrail confirmed for every recommendation.',
+      [tr('tp','HITL: enforced'),tr('tp','Precision: HIGH'),tr('tn','Speed: −4min'),tr('tp','Q_acc: +0.18')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-8,reg:15,dip:8,pub:12,sci:10,qt:0,qc:0,qn:0,qsc:0,qa:.18,qd:0,casc:.08}),
+    opt('c','OPT C','Partial Override + Degraded Mode','var(--gov)','Override only most critical control functions. Maintain degraded-mode for non-critical processes.',
+      [tr('tp','Ops: partial'),tr('tn','Physical risk: partial'),tr('tp','Q_acc: +0.12')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-15,reg:10,dip:0,pub:5,sci:8,qt:0,qc:0,qn:0,qsc:0,qa:.12,qd:0,casc:.14}),
+    opt('d','OPT D','Autonomous Response — HITL Bypassed','var(--crit)','Allow automated response without human confirmation. Fastest but violates HITL guardrail principle.',
+      [tr('tn','HITL: VIOLATED'),tr('tn','Q_acc: −0.20'),tr('tp','Speed: fastest'),tr('tn','Autonomous on bad data')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-5,reg:-15,dip:-5,pub:-12,sci:0,qt:0,qc:0,qn:0,qsc:0,qa:-.20,qd:0,casc:.25})
+  ]},
+i5:{title:'Recovery — OT Resilience Architecture Reform',badge:{c:'var(--lo)',l:'IFD · Recovery'},sev:'MED',
+  desc:'T+96 hours. Physical threat contained. This final decision determines long-term IFD resilience and your Ψ_v2 legacy score.',
+  chain:[{t:'ci',l:'HW-BOM reform'},{t:'ca',l:'+'},{t:'cc',l:'SC-GREY controls'},{t:'ca',l:'+'},{t:'cg',l:'Policy legacy'}],
+  intel:[{lbl:'HW-BOM completeness current',val:'8% — critical structural gap',col:'var(--crit)'},
+         {lbl:'Authorized-vendor list',val:'Implementable immediately — ready',col:'var(--swd)'},
+         {lbl:'Q_sctl final opportunity',val:'HW provenance mandate: +0.24',col:'var(--sc)'}],
+  prompt:'Final governance decision. What structural reforms do you implement to prevent recurrence?',
+  opts:[
+    opt('a','OPT A','HW-BOM Mandate + Authorized Vendor Registry','var(--ifd)','Mandatory hardware BOM for all OT assets. Authorized vendor registry with provenance verification. SC-GREY-AUTH at intake.',
+      [tr('tp','HW-PROV: established'),tr('tp','SC-GREY: prevented'),tr('tp','Q_sctl: +0.24')],
+      {sbom:5,hhi:-.10,grey:-40,pv:0,tech:8,reg:20,dip:8,pub:12,sci:25,qt:0,qc:0,qn:0,qsc:.24,qa:0,qd:0,casc:0,final:true}),
+    opt('b','OPT B','NERC CIP / NIS2 Annex IFD Alignment','var(--gov)','Full alignment of IFD controls to NERC CIP and NIS2 Annex I. Regulatory compliance as the governance framework.',
+      [tr('tp','Regulatory: aligned'),tr('tp','Q_norm: +0.20'),tr('tn','HW-BOM: partial only')],
+      {sbom:0,hhi:-.08,grey:-15,pv:0,tech:5,reg:28,dip:10,pub:8,sci:15,qt:0,qc:0,qn:.20,qsc:0,qa:0,qd:0,casc:0,final:true}),
+    opt('c','OPT C','International OT Security Standards Initiative','var(--swd)','Lead international OT/ICS supply chain security standards initiative. Hardware BOM as international requirement.',
+      [tr('tp','International norms'),tr('tp','Q_coord: +0.22'),tr('tn','Domestic: slower')],
+      {sbom:0,hhi:-.05,grey:-10,pv:0,tech:0,reg:12,dip:28,pub:20,sci:10,qt:0,qc:.22,qn:0,qsc:0,qa:0,qd:0,casc:0,final:true}),
+    opt('d','OPT D','Minimal — Document and Return','var(--txm)','Minimal reforms. Document lessons. Return to normal procurement practices.',
+      [tr('tn','SC-GREY: persists'),tr('tn','Structural: unchanged'),tr('tu','Ops: immediate')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:5,reg:0,dip:0,pub:-5,sci:0,qt:0,qc:0,qn:0,qsc:-.08,qa:0,qd:0,casc:0,final:true})
+  ]},
+// ════ FRACTURE POINT ════
+f1:{title:'XZ-Class: Malicious OSS Maintainer Detected',badge:{c:'var(--swd)',l:'SWD · DEP-TRST'},sev:'CRITICAL',
+  desc:'Threat intelligence identifies a malicious maintainer in a critical OSS library used across your cloud-native stack. SWD-DEP-MAINT score: 0.08. The library has 2.1M weekly downloads. Your SBOM shows 34 direct production uses.',
+  chain:[{t:'cs',l:'Malicious maintainer'},{t:'ca',l:'→'},{t:'cs',l:'34 prod services'},{t:'ca',l:'→'},{t:'cx',l:'Blast radius unknown'}],
+  intel:[{lbl:'Direct dependency uses',val:'34 production services affected',col:'var(--crit)'},
+         {lbl:'Transitive dependency depth',val:'8 levels — SWD-SBOM-NSTD critical',col:'var(--hi)'},
+         {lbl:'Maintainer compromise timeline',val:'Active ~2 years — long-duration undetected',col:'var(--crit)'}],
+  prompt:'Two-year undetected malicious maintainer. Canonical XZ Utils scenario. What is your immediate response?',
+  opts:[
+    opt('a','OPT A','Pin + Audit: Freeze + Dependency Audit','var(--swd)','Pin all uses to last-known-good version. Audit all 34 direct dependencies plus transitive graph using SBOM.',
+      [tr('tp','Blast radius: scoped'),tr('tp','SBOM: critical here'),tr('tn','Ops: degraded'),tr('tn','8-level audit: intensive')],
+      {sbom:15,hhi:0,grey:0,pv:0,tech:-10,reg:8,dip:5,pub:0,sci:15,qt:0,qc:0,qn:0,qsc:.15,qa:0,qd:0,casc:.10}),
+    opt('b','OPT B','Fork + Internal Maintenance','var(--ifd)','Fork the library immediately. Establish internal maintenance. Accelerate replacement across all 34 services.',
+      [tr('tp','Dependency: eliminated'),tr('tn','Resources: HIGH'),tr('tn','3-week transition')],
+      {sbom:10,hhi:-.08,grey:0,pv:0,tech:-5,reg:5,dip:3,pub:5,sci:20,qt:0,qc:0,qn:0,qsc:.18,qa:0,qd:0,casc:.08}),
+    opt('c','OPT C','Public Disclosure + CVE Coordination','var(--gov)','Coordinate responsible disclosure. File CVE. Notify downstream users via VEX statements. Win-win OSS governance action.',
+      [tr('tp','Ecosystem: protected'),tr('tp','Q_norm: +0.20'),tr('tn','Competitive: disclosure')],
+      {sbom:8,hhi:0,grey:0,pv:0,tech:0,reg:20,dip:18,pub:22,sci:5,qt:0,qc:.15,qn:.20,qsc:0,qa:0,qd:0,casc:.12}),
+    opt('d','OPT D','Silent Internal Patch — No Disclosure','var(--crit)','Fix internally. Do not disclose. Protect competitive position.',
+      [tr('tp','Attribution: protected'),tr('tn','Q_norm: −0.15'),tr('tn','Ecosystem: unprotected')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:3,reg:-15,dip:-12,pub:-18,sci:0,qt:0,qc:0,qn:-.15,qsc:0,qa:0,qd:0,casc:.28})
+  ]},
+f2:{title:'CSIRT Coordination Failure: SBOM Format Mismatch',badge:{c:'var(--gov)',l:'GOV · Q_coord'},sev:'HIGH',
+  desc:'Allied CSIRTs are detecting the same malicious library pattern. They request component-level forensic sharing — but your SBOM format is proprietary, incompatible with their CycloneDX tools. A governance failure is blocking collective defense.',
+  chain:[{t:'cg',l:'CSIRT request'},{t:'ca',l:'→'},{t:'cc',l:'Format mismatch'},{t:'ca',l:'→'},{t:'cx',l:'Coordination blocked'}],
+  intel:[{lbl:'SBOM format gap',val:'You: proprietary — Partners: CycloneDX',col:'var(--crit)'},
+         {lbl:'Q_coord penalty if unresolved',val:'−0.22 from Ψ_v2 final',col:'var(--hi)'},
+         {lbl:'CycloneDX conversion time',val:'6 hours — tooling available now',col:'var(--swd)'}],
+  prompt:'Format incompatibility is blocking collective defense. The win-win governance action is obvious but takes 6 hours. What do you prioritize?',
+  opts:[
+    opt('a','OPT A','Emergency SBOM Conversion + Share','var(--swd)','Invest 6 hours in CycloneDX conversion. Share complete component forensics with all requesting CSIRTs.',
+      [tr('tp','Q_coord: +0.22'),tr('tp','Collective defense'),tr('tn','6hr delay')],
+      {sbom:12,hhi:0,grey:0,pv:0,tech:0,reg:10,dip:22,pub:12,sci:8,qt:0,qc:.22,qn:0,qsc:0,qa:0,qd:0,casc:.06}),
+    opt('b','OPT B','Share Summary + Propose Standard Adoption','var(--gov)','Share human-readable summary now. Propose joint adoption of CycloneDX as sector standard.',
+      [tr('tp','Immediate sharing'),tr('tp','Long-term standard'),tr('tn','Q_coord: partial')],
+      {sbom:5,hhi:0,grey:0,pv:0,tech:0,reg:8,dip:15,pub:8,sci:3,qt:0,qc:.14,qn:.10,qsc:0,qa:0,qd:0,casc:.10}),
+    opt('c','OPT C','Bilateral Sharing — Primary Ally Only','var(--ifd)','Share full data with closest ally only. Others receive summary.',
+      [tr('tp','Primary: strong'),tr('tn','Others: penalized'),tr('tn','Q_coord: partial')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:3,dip:8,pub:3,sci:0,qt:0,qc:.06,qn:0,qsc:0,qa:0,qd:0,casc:.14}),
+    opt('d','OPT D','Decline — Proprietary Format Protection','var(--crit)','Decline to share citing proprietary format and competitive sensitivity.',
+      [tr('tn','Q_coord: −0.20'),tr('tn','Allied trust: severe'),tr('tn','Collective defense: fails')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:-5,dip:-20,pub:-15,sci:0,qt:0,qc:-.20,qn:0,qsc:0,qa:0,qd:0,casc:.28})
+  ]},
+f3:{title:'Cloud Provider Concentration: HHI=0.52',badge:{c:'var(--sc)',l:'SCTL · SC-CONC'},sev:'HIGH',
+  desc:'52% of your cloud-native stack depends on a single cloud provider whose libraries include the compromised OSS dependency. SC-CONC-HHI: 0.52. A single vendor advisory could cascade to majority of production services simultaneously.',
+  chain:[{t:'cc',l:'SC-CONC HHI=0.52'},{t:'ca',l:'→'},{t:'cs',l:'52% prod services'},{t:'ca',l:'→'},{t:'cx',l:'Single advisory cascade'}],
+  intel:[{lbl:'Cloud provider dependency',val:'52% of production services',col:'var(--hi)'},
+         {lbl:'Cascade if advisory issued',val:'Simultaneous impact to 52% of stack',col:'var(--crit)'},
+         {lbl:'Multi-cloud alternative',val:'Architecture change: 4-week project',col:'var(--med)'}],
+  prompt:'Concentration risk materializing in real time. You cannot fix the architecture in 4 weeks — but you can begin now and mitigate short-term exposure.',
+  opts:[
+    opt('a','OPT A','Emergency Multi-Cloud Migration Sprint','var(--ifd)','Begin 4-week multi-cloud migration for highest-criticality services. Accept short-term concentration while building resilience.',
+      [tr('tp','HHI: −0.22 in 4wks'),tr('tn','Resources: HIGH'),tr('tn','Short-term: exposed')],
+      {sbom:0,hhi:-.22,grey:0,pv:0,tech:-5,reg:8,dip:3,pub:5,sci:15,qt:0,qc:0,qn:0,qsc:.12,qa:0,qd:0,casc:.20}),
+    opt('b','OPT B','Scope Reduction — Reclassify Critical Services','var(--swd)','Reduce number of services classified as critical under this vendor. Reclassify to reduce blast radius.',
+      [tr('tp','Blast radius: reduced'),tr('tp','Fast: 48hr'),tr('tn','HHI: unchanged')],
+      {sbom:0,hhi:-.05,grey:0,pv:0,tech:-3,reg:5,dip:0,pub:3,sci:5,qt:.08,qc:0,qn:0,qsc:0,qa:0,qd:0,casc:.16}),
+    opt('c','OPT C','Contractual Resilience + Escrow (SC-CONC-CONT)','var(--gov)','Invoke SC-CONC-CONT: negotiate contractual resilience, code escrow, guaranteed notification lead time.',
+      [tr('tp','SC-CONC-CONT: active'),tr('tp','Q_norm: +0.12'),tr('tn','HHI: unchanged now')],
+      {sbom:0,hhi:-.08,grey:0,pv:0,tech:0,reg:15,dip:8,pub:5,sci:8,qt:0,qc:0,qn:.12,qsc:0,qa:0,qd:0,casc:.22}),
+    opt('d','OPT D','Accept Concentration Risk — No Action','var(--txm)','Accept current concentration. No structural changes. Document risk.',
+      [tr('tn','HHI: persists'),tr('tn','Cascade risk: HIGH'),tr('tu','Resources: saved')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:3,reg:-5,dip:0,pub:-3,sci:-5,qt:0,qc:0,qn:0,qsc:-.08,qa:0,qd:0,casc:.38})
+  ]},
+f4:{title:'Regulatory Triple Trigger: EO 14028 + NIS2 + EU CRA',badge:{c:'var(--gov)',l:'GOV · Q_norm'},sev:'HIGH',
+  desc:'Three regulatory obligations simultaneously triggered: EO 14028 SBOM delivery SLA breach in 14hrs, NIS2 72-hour window (38hrs remaining), and EU CRA vendor contract amendments (3/9 outstanding). Q_norm under maximum pressure.',
+  chain:[{t:'cg',l:'EO 14028'},{t:'ca',l:'+'},{t:'cg',l:'NIS2 72hr'},{t:'ca',l:'+'},{t:'cg',l:'EU CRA'},{t:'ca',l:'→'},{t:'cx',l:'Q_norm stress: MAX'}],
+  intel:[{lbl:'EO 14028 SBOM delivery',val:'SLA breach in 14hrs — legally binding',col:'var(--crit)'},
+         {lbl:'NIS2 window',val:'38hrs remaining — achievable',col:'var(--hi)'},
+         {lbl:'EU CRA contract amendments',val:'3 of 9 vendors still outstanding',col:'var(--hi)'}],
+  prompt:'Maximum regulatory pressure. You cannot do everything simultaneously. What is your prioritization?',
+  opts:[
+    opt('a','OPT A','Prioritize EO 14028 + NIS2 (Legal Deadlines First)','var(--gov)','NIS2 notification and EO 14028 SBOM delivery are legally binding. Prioritize these. CRA follows in 48hrs.',
+      [tr('tp','Q_norm: +0.22'),tr('tp','Legal: compliant'),tr('tn','CRA: delayed 48hr')],
+      {sbom:10,hhi:0,grey:0,pv:0,tech:0,reg:22,dip:10,pub:10,sci:5,qt:0,qc:0,qn:.22,qsc:0,qa:0,qd:0,casc:.08}),
+    opt('b','OPT B','All-Hands Compliance Sprint — All Three','var(--swd)','Full compliance sprint addressing all three regulatory obligations simultaneously.',
+      [tr('tp','Q_norm: +0.28'),tr('tp','Full compliance'),tr('tn','Resources: maximum'),tr('tn','Technical: deferred')],
+      {sbom:15,hhi:0,grey:0,pv:0,tech:-8,reg:28,dip:12,pub:15,sci:8,qt:0,qc:0,qn:.28,qsc:0,qa:0,qd:0,casc:.06}),
+    opt('c','OPT C','Brief Regulators + Request Coordinated Extension','var(--ifd)','Brief all three regulators simultaneously. Request coordinated extension. Demonstrate good faith.',
+      [tr('tp','Relationship: built'),tr('tn','Extension: uncertain'),tr('tp','Q_norm: maintained if approved')],
+      {sbom:5,hhi:0,grey:0,pv:0,tech:0,reg:10,dip:8,pub:5,sci:3,qt:0,qc:0,qn:.08,qsc:0,qa:.10,qd:0,casc:.12}),
+    opt('d','OPT D','Minimum Viable Compliance — Avoid Enforcement','var(--crit)','Do minimum required to avoid enforcement action. Speed over quality.',
+      [tr('tn','Q_norm: minimal'),tr('tn','Trust: damaged'),tr('tu','Resources: low')],
+      {sbom:3,hhi:0,grey:0,pv:0,tech:0,reg:5,dip:-5,pub:-5,sci:0,qt:0,qc:0,qn:.04,qsc:0,qa:0,qd:0,casc:.20})
+  ]},
+f5:{title:'Policy Legacy — OSS Governance Reform',badge:{c:'var(--lo)',l:'GOV · Policy Legacy'},sev:'MED',
+  desc:'T+96 hours. Threat contained. OSS supply chain governance remains structurally unreformed. Your final decision determines whether this scenario produces lasting policy improvements or a repeatable vulnerability.',
+  chain:[{t:'cs',l:'OSS reform'},{t:'ca',l:'+'},{t:'cc',l:'SBOM standard'},{t:'ca',l:'+'},{t:'cg',l:'International norms'}],
+  intel:[{lbl:'OSS governance gap',val:'No maintainer vetting process exists',col:'var(--hi)'},
+         {lbl:'SBOM reform opportunity',val:'CycloneDX sector-wide adoption: ready',col:'var(--swd)'},
+         {lbl:'International opportunity',val:'FIRST OSS security WG forming now',col:'var(--gov)'}],
+  prompt:'Final decision. What structural OSS governance reforms do you champion?',
+  opts:[
+    opt('a','OPT A','Maintainer Vetting Mandate + SBOM Standard','var(--swd)','Mandate maintainer trust scoring for all production OSS. Adopt CycloneDX. Publish as sector recommendation.',
+      [tr('tp','DEP-TRST: established'),tr('tp','Q_sctl: +0.22'),tr('tp','Win-win: sector benefits')],
+      {sbom:20,hhi:-.08,grey:0,pv:0,tech:8,reg:18,dip:15,pub:15,sci:20,qt:0,qc:0,qn:0,qsc:.22,qa:0,qd:0,casc:0,final:true}),
+    opt('b','OPT B','Join FIRST OSS Security Working Group','var(--gov)','Become founding member of FIRST OSS security WG. Contribute incident data and SBOM standards input.',
+      [tr('tp','International norms'),tr('tp','Q_coord: +0.20'),tr('tn','Domestic reform: slower')],
+      {sbom:8,hhi:-.05,grey:0,pv:0,tech:3,reg:12,dip:25,pub:18,sci:10,qt:0,qc:.20,qn:0,qsc:0,qa:0,qd:0,casc:0,final:true}),
+    opt('c','OPT C','Fund Critical OSS Maintainer Infrastructure','var(--ifd)','Organizational funding for critical OSS maintainers. Reduces DEP-MAINT risk by improving ecosystem health.',
+      [tr('tp','Ecosystem: improved'),tr('tp','Long-term resilience'),tr('tu','Compliance: unchanged')],
+      {sbom:5,hhi:-.05,grey:0,pv:0,tech:5,reg:8,dip:12,pub:20,sci:8,qt:0,qc:0,qn:0,qsc:.15,qa:0,qd:0,casc:0,final:true}),
+    opt('d','OPT D','No Reform — Return to Operations','var(--txm)','No structural reforms. Document and return.',
+      [tr('tn','Structural: unchanged'),tr('tn','Recurrence: HIGH')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:3,reg:0,dip:0,pub:-5,sci:0,qt:0,qc:0,qn:0,qsc:-.05,qa:0,qd:0,casc:0,final:true})
+  ]},
+// ════ PHANTOM CIRCUIT ════
+p1:{title:'Long-Duration Implant: T+18 Months Detected',badge:{c:'var(--crit)',l:'IFD · HW-PROV'},sev:'CRITICAL',
+  desc:'Routine IFD audit detects behavioral anomaly. Forensic analysis reveals hardware implants installed during manufacturing — 18 months of undetected presence. HW-PROV: 0.04. Hardware BOM completeness: 0%. SC-GREY-IMPL: 0.78.',
+  chain:[{t:'cc',l:'Implant ×3 nodes'},{t:'ca',l:'18 months'},{t:'ci',l:'OT data exfil'},{t:'ca',l:'→'},{t:'cx',l:'Attribution gap'}],
+  intel:[{lbl:'Implant active duration',val:'18 months — long-duration OPSEC',col:'var(--crit)'},
+         {lbl:'Data potentially exposed',val:'OT operational data + process parameters',col:'var(--crit)'},
+         {lbl:'SC-GREY-JURIS',val:'High confidence: adversary state-sponsor',col:'var(--hi)'}],
+  prompt:'18-month undetected implant. Nation-state level persistence. Your response sets precedent for IFD supply chain governance.',
+  opts:[
+    opt('a','OPT A','Forensic Preservation + Intelligence Extraction','var(--gov)','Preserve implants in place (controlled). Extract maximum intelligence. Share with national security partners.',
+      [tr('tp','Intelligence: maximized'),tr('tp','Attribution: confirmed'),tr('tn','Risk: 2-week continuation'),tr('tp','National security value')],
+      {sbom:0,hhi:0,grey:-10,pv:0,tech:-3,reg:10,dip:25,pub:0,sci:5,qt:0,qc:.22,qn:0,qsc:0,qa:0,qd:0,casc:.18}),
+    opt('b','OPT B','Immediate Removal + Full System Rebuild','var(--ifd)','Remove all three nodes immediately. Full system rebuild from verified clean state. Hardware BOM sprint.',
+      [tr('tp','Threat: eliminated'),tr('tn','Intelligence: lost'),tr('tn','OPS: −35%')],
+      {sbom:0,hhi:0,grey:-45,pv:0,tech:-35,reg:15,dip:5,pub:8,sci:25,qt:0,qc:0,qn:0,qsc:.18,qa:0,qd:0,casc:.06}),
+    opt('c','OPT C','Controlled Environment + Monitoring Operation','var(--swd)','Move affected nodes to controlled/monitored environment. Continue partial operation while extracting intelligence.',
+      [tr('tp','Intelligence: extracted'),tr('tp','Ops: partial'),tr('tn','Risk: managed but present')],
+      {sbom:0,hhi:0,grey:-20,pv:0,tech:-15,reg:8,dip:18,pub:3,sci:12,qt:0,qc:0,qn:0,qsc:0,qa:.12,qd:0,casc:.12}),
+    opt('d','OPT D','Escalate to National Security Authorities','var(--gl)','Escalate to national security authorities. Invoke NC3 HITL protocols. Transfer response to designated authority.',
+      [tr('tp','Authority: clear'),tr('tp','National response'),tr('tn','Org control: reduced')],
+      {sbom:0,hhi:0,grey:-15,pv:0,tech:-10,reg:20,dip:15,pub:15,sci:10,qt:0,qc:0,qn:0,qsc:0,qa:.20,qd:0,casc:.08})
+  ]},
+p2:{title:'Attribution Decision: Public vs. Private Response',badge:{c:'var(--gov)',l:'GOV · Attribution'},sev:'HIGH',
+  desc:'Attribution to adversary-state is high confidence (91%). Public attribution creates geopolitical escalation risk but deters future operations. Private attribution enables intelligence exploitation.',
+  chain:[{t:'cg',l:'91% attribution'},{t:'ca',l:'→'},{t:'cg',l:'Public or private?'},{t:'ca',l:'→'},{t:'cg',l:'Geopolitical signal'}],
+  intel:[{lbl:'Attribution confidence',val:'91% — forensic + SIGINT confirmation',col:'var(--swd)'},
+         {lbl:'Public attribution risk',val:'Geopolitical: moderate escalation',col:'var(--hi)'},
+         {lbl:'Deterrence value',val:'HIGH — similar ops in 3 allied networks',col:'var(--ifd)'}],
+  prompt:'High-confidence nation-state attribution. Public vs. private attribution is a strategic governance decision with direct Ψ_v2 implications.',
+  opts:[
+    opt('a','OPT A','Coordinated Public Attribution (Five Eyes)','var(--gov)','Coordinate with Five Eyes for joint public attribution statement. Maximum deterrence, shared political cost.',
+      [tr('tp','Deterrence: HIGH'),tr('tp','Allied signal: strong'),tr('tn','Escalation: moderate')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:10,dip:28,pub:20,sci:5,qt:0,qc:.22,qn:.12,qsc:0,qa:0,qd:0,casc:.08}),
+    opt('b','OPT B','Private Attribution: Intelligence Exploitation','var(--ifd)','Share privately with national security partners. Use attribution for intelligence exploitation and covert deterrence.',
+      [tr('tp','Intelligence: preserved'),tr('tn','Public deterrence: 0'),tr('tp','Escalation: avoided')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:5,dip:15,pub:3,sci:8,qt:0,qc:.10,qn:0,qsc:0,qa:0,qd:0,casc:.06}),
+    opt('c','OPT C','UN/International Forum Attribution','var(--swd)','Present attribution evidence at international forum. Build multilateral consensus.',
+      [tr('tp','International norms'),tr('tp','Consensus: built'),tr('tn','Speed: slow')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:12,dip:22,pub:18,sci:3,qt:0,qc:.16,qn:.18,qsc:0,qa:0,qd:0,casc:.06}),
+    opt('d','OPT D','No Attribution — Protect Sources','var(--crit)','Do not attribute. Protect intelligence sources and methods.',
+      [tr('tp','Sources: protected'),tr('tn','Deterrence: zero'),tr('tn','Allied trust: damaged')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:0,dip:-5,pub:-8,sci:0,qt:0,qc:-.05,qn:0,qsc:0,qa:0,qd:0,casc:.12})
+  ]},
+p3:{title:'Hardware BOM Implementation Sprint',badge:{c:'var(--ifd)',l:'IFD · HW-PROV'},sev:'HIGH',
+  desc:'Executive directive: implement hardware BOM for all OT/ICS assets. Current HW-BOM completeness: 8%. SC-GREY-PROC: 38%. 847 OT components across 5 sites. Design your hardware provenance program.',
+  chain:[{t:'ci',l:'HW-BOM: 8%'},{t:'ca',l:'→'},{t:'cc',l:'SC-GREY-PROC: 38%'},{t:'ca',l:'→'},{t:'cg',l:'Provenance reform'}],
+  intel:[{lbl:'Assets requiring HW-BOM',val:'847 OT components across 5 sites',col:'var(--hi)'},
+         {lbl:'Non-authorized procurement',val:'38% — SC-GREY-PROC critical',col:'var(--crit)'},
+         {lbl:'Full HW-BOM timeline',val:'12 weeks at current velocity',col:'var(--hi)'}],
+  prompt:'Hardware BOM is the IFD equivalent of SBOM. Design your provenance program.',
+  opts:[
+    opt('a','OPT A','Risk-Tiered HW-BOM: Critical Assets First','var(--ifd)','Prioritize HW-BOM for highest-criticality assets (NC3-adjacent, SCADA control). 4-week sprint for Tier 1.',
+      [tr('tp','Tier 1: secured fast'),tr('tp','Risk-tiered: practical'),tr('tn','Tier 2/3: 12 weeks')],
+      {sbom:5,hhi:0,grey:-20,pv:0,tech:5,reg:15,dip:5,pub:8,sci:18,qt:0,qc:0,qn:0,qsc:.18,qa:0,qd:0,casc:.10}),
+    opt('b','OPT B','Authorized Vendor Registry + Intake Controls','var(--sc)','Establish authorized vendor registry first. All future procurement through registry. Retroactive audit of existing assets.',
+      [tr('tp','SC-GREY: prevented forward'),tr('tp','Registry: scalable'),tr('tn','Retroactive: slow')],
+      {sbom:3,hhi:-.08,grey:-15,pv:0,tech:3,reg:12,dip:3,pub:5,sci:15,qt:0,qc:0,qn:0,qsc:.14,qa:0,qd:0,casc:.12}),
+    opt('c','OPT C','Full Site Survey + Emergency Sprint','var(--gov)','Full site surveys across all 5 facilities. 12-week sprint with external consultant support.',
+      [tr('tp','Complete coverage'),tr('tn','Resources: maximum'),tr('tn','12-week disruption')],
+      {sbom:5,hhi:-.05,grey:-35,pv:0,tech:-8,reg:20,dip:8,pub:10,sci:25,qt:0,qc:0,qn:0,qsc:.22,qa:0,qd:0,casc:.06}),
+    opt('d','OPT D','Defer — Resource Constraints','var(--txm)','Defer HW-BOM implementation. Resource constraints prevent immediate action.',
+      [tr('tn','HW-PROV: unchanged'),tr('tn','SC-GREY: persists'),tr('tn','Recurrence: HIGH')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:-8,dip:0,pub:-5,sci:-5,qt:0,qc:0,qn:0,qsc:-.10,qa:0,qd:0,casc:.30})
+  ]},
+p4:{title:'NC3 AI Integrity Degraded — HITL Fail-Safe Armed',badge:{c:'var(--crit)',l:'IFD · NC3 Stress'},sev:'CRITICAL',
+  desc:'NC3 AI decision-support system shows integrity anomalies. Hardware implant may have compromised sensor data feeding the AI layer. NC3 integrity index: 0.18 — below fail-safe threshold of 0.25. HITL guardrail is the only reliable backstop.',
+  chain:[{t:'ci',l:'Sensor data'},{t:'ca',l:'poisoned'},{t:'cx',l:'NC3 AI: 0.18'},{t:'ca',l:'→'},{t:'cx',l:'FAIL-SAFE ARMED'}],
+  intel:[{lbl:'NC3 AI integrity index',val:'0.18 — threshold 0.25 — CRITICAL',col:'var(--crit)'},
+         {lbl:'Sensor data trust',val:'Cannot verify — implant may be active',col:'var(--crit)'},
+         {lbl:'HITL guardrail',val:'ARMED — human authorization required',col:'var(--hi)'}],
+  prompt:'NC3 AI integrity is critically low. HITL is the only backstop. This decision tests your governance principles on AI authority.',
+  opts:[
+    opt('a','OPT A','Suspend AI-NC3 + Full Manual Mode','var(--ifd)','Suspend all AI-NC3 decision support. Full manual authority protocols. Human decision for every action.',
+      [tr('tp','AI risk: eliminated'),tr('tp','HITL: fully enforced'),tr('tn','Speed: reduced'),tr('tp','Q_acc: +0.25')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-15,reg:20,dip:10,pub:15,sci:15,qt:0,qc:0,qn:0,qsc:0,qa:.25,qd:0,casc:.04}),
+    opt('b','OPT B','AI-Assist with HITL Confirmation Each Step','var(--swd)','Maintain AI support but require human confirmation for every AI recommendation.',
+      [tr('tp','HITL: enforced'),tr('tp','AI: useful'),tr('tn','Speed: −40%'),tr('tp','Q_acc: +0.18')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-5,reg:15,dip:8,pub:10,sci:8,qt:0,qc:0,qn:0,qsc:0,qa:.18,qd:0,casc:.08}),
+    opt('c','OPT C','Isolate AI on Clean Backup Data Source','var(--gov)','Switch NC3 AI to verified backup sensor data source. Resume AI-assisted operations on clean data.',
+      [tr('tp','AI: restored'),tr('tp','Integrity: recovered'),tr('tn','Backup: limited scope')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:-3,reg:10,dip:5,pub:8,sci:10,qt:.12,qc:0,qn:0,qsc:0,qa:0,qd:0,casc:.06}),
+    opt('d','OPT D','Continue AI Operations — Accept Integrity Risk','var(--crit)','Continue AI operations despite integrity warning. Accept risk of acting on compromised sensor data.',
+      [tr('tn','HITL: BYPASSED'),tr('tn','Q_acc: −0.20'),tr('tp','Speed: fastest'),tr('tn','Adversary may have control')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:5,reg:-20,dip:-10,pub:-15,sci:-10,qt:0,qc:0,qn:0,qsc:0,qa:-.20,qd:0,casc:.35})
+  ]},
+p5:{title:'Policy Legacy: National SC Security Architecture',badge:{c:'var(--lo)',l:'ALL DOMAINS · Legacy'},sev:'MED',
+  desc:'T+120 hours. All immediate threats contained. This is the highest-stakes policy decision in PHANTOM CIRCUIT — the structural reforms you implement shape national and international supply chain security architecture.',
+  chain:[{t:'ci',l:'HW-BOM mandate'},{t:'ca',l:'+'},{t:'cg',l:'Attribution norms'},{t:'ca',l:'+'},{t:'cc',l:'International treaty'}],
+  intel:[{lbl:'International treaty opportunity',val:'5 allied nations ready to sign',col:'var(--swd)'},
+         {lbl:'National HW-BOM standard',val:'No national standard exists yet',col:'var(--crit)'},
+         {lbl:'Ψ_v2 final opportunity',val:'International treaty: +0.24 Q_coord',col:'var(--gov)'}],
+  prompt:'Highest-stakes policy decision. Your response shapes national and international SC security architecture for years.',
+  opts:[
+    opt('a','OPT A','Champion International SC Security Treaty','var(--gov)','Lead drafting of international supply chain security treaty: mandatory HW-BOM, grey-market controls, SBOM mutual recognition.',
+      [tr('tp','International norms: set'),tr('tp','Q_coord: +0.24'),tr('tp','Win-win: all nations benefit'),tr('tn','Ratification: 12–24 months')],
+      {sbom:10,hhi:-.10,grey:-20,pv:0,tech:5,reg:18,dip:30,pub:22,sci:20,qt:0,qc:.24,qn:.15,qsc:0,qa:0,qd:0,casc:0,final:true}),
+    opt('b','OPT B','National HW-BOM Standard + Regulatory Mandate','var(--ifd)','Establish national HW-BOM standard. Mandate authorized vendor registries for all critical infrastructure.',
+      [tr('tp','National: strong'),tr('tp','Q_sctl: +0.24'),tr('tn','International: slower')],
+      {sbom:8,hhi:-.15,grey:-30,pv:0,tech:8,reg:25,dip:12,pub:15,sci:25,qt:0,qc:0,qn:0,qsc:.24,qa:0,qd:0,casc:0,final:true}),
+    opt('c','OPT C','AI-NC3 Governance Framework','var(--swd)','Establish formal AI-NC3 integrity governance: HITL requirements, SC integrity thresholds, fail-safe standards. Propose to NATO.',
+      [tr('tp','AI governance: established'),tr('tp','NATO alignment'),tr('tn','HW-BOM: separate effort')],
+      {sbom:5,hhi:-.05,grey:-10,pv:0,tech:5,reg:15,dip:22,pub:18,sci:12,qt:0,qc:.18,qn:0,qsc:0,qa:.20,qd:0,casc:0,final:true}),
+    opt('d','OPT D','Classified After-Action Only','var(--txm)','Classify all findings. Internal after-action only. No public or international policy output.',
+      [tr('tn','International: nothing'),tr('tn','Recurrence: likely'),tr('tn','Deterrence: zero')],
+      {sbom:0,hhi:0,grey:0,pv:0,tech:0,reg:5,dip:-8,pub:-10,sci:0,qt:0,qc:-.08,qn:0,qsc:0,qa:0,qd:0,casc:0,final:true})
+  ]}
+};
+
+// ═══════ Math ═══════
+function gcc(){return GS.wi*GS.gifd+GS.ws*GS.gswd+GS.wc*GS.scts+GS.lam*GS.gifd*GS.gswd;}
+function psi(){return .30*GS.qt+.25*GS.qc+.15*GS.qn+.20*GS.qsc+.10*GS.qa+.05*GS.qd;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+// ═══════ Load scenario ═══════
+function loadS(id,el){
+  document.querySelectorAll('.sb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  const s=SC[id];
+  GS.scen=id;GS.tidx=0;GS.turn=0;
+  Object.assign(GS,{wi:s.wi,ws:s.ws,wc:s.wc,lam:s.lam,...s.ini});
+  GS.tech=82;GS.reg=74;GS.dip=65;GS.pub=70;GS.sci=88;
+  GS.cult=71;GS.mis=28;GS.ally=68;
+  GS.qt=.82;GS.qc=.68;GS.qn=.74;GS.qsc=.80;GS.qa=.71;GS.qd=.65;
+  GS.def=85;GS.adv=12;GS.decisions=[];GS.toks=0;GS.revealed=[];GS.selOpt=null;
+  // Update header bar
+  document.getElementById('sbn').textContent=s.nm;
+  document.getElementById('sbd').textContent=s.desc;
+  document.getElementById('geq').textContent=`${s.wi}×IFD + ${s.ws}×SWD + ${s.wc}×SC + ${s.lam}×IFD×SWD`;
+  const ch=document.getElementById('schips');
+  ch.innerHTML='';
+  s.chips.forEach(c=>{const d=document.createElement('div');d.className='sch';d.style.borderColor=c.c;d.style.color=c.c;d.textContent=c.l;ch.appendChild(d);});
+  document.getElementById('ga').innerHTML='';
+  document.getElementById('gpf').innerHTML='';
+  document.getElementById('elog').innerHTML='';
+  document.getElementById('ego').classList.remove('on');
+  resetToks();
+  updateMetrics();
+  addLog('S',`Scenario: ${s.nm} · w_IFD=${s.wi} · λ=${s.lam}`);
+  startTurn();
+}
+
+// ═══════ Turn management ═══════
+function startTurn(){
+  const s=SC[GS.scen];
+  if(GS.tidx>=s.turns.length){endGame();return;}
+  const td=T[s.turns[GS.tidx]];
+  if(!td){endGame();return;}
+  GS.turn=GS.tidx+1;GS.selOpt=null;GS.revealed=[];GS.toks=0;
+  resetToks();
+  setPhase('intel');
+  document.getElementById('htrn').textContent=`T-${GS.turn}`;
+  document.getElementById('hdef').textContent=GS.def;
+  document.getElementById('hadv').textContent=GS.adv;
+  renderIntel(td);
+}
+
+function renderIntel(td){
+  const ga=document.getElementById('ga');
+  ga.innerHTML='';
+  const c=makeCard();
+  c.innerHTML=`
+    <div class="pch pcard-hdr">
+      <div class="pbadge" style="border-color:${td.badge.c};color:${td.badge.c}">${td.badge.l}</div>
+      <div class="ptitle">${td.title}</div>
+      <div class="ptag">TURN ${GS.turn} OF 5 · ${td.sev}</div>
+    </div>
+    <div class="pb pcard-body">
+      <div class="evd">${td.desc}</div>
+      <div class="chain"><div class="cl">PROPAGATION:</div>${td.chain.map(n=>`<div class="cn ${n.t}">${n.l}</div>`).join('')}</div>
+      <div class="hint">INTEL PHASE — Spend tokens (left panel) to reveal additional intelligence before deciding</div>
+      <div class="irg" id="irg">
+        ${td.intel.map((ir,i)=>`<div class="iri" id="ir${i}" style="opacity:${GS.revealed.includes(i)?1:.22};border-color:${GS.revealed.includes(i)?ir.col:'var(--b2)'}">
+          <div class="irl">${ir.lbl}</div>
+          <div class="irv" style="color:${ir.col}">${GS.revealed.includes(i)?ir.val:'[ spend token to reveal ]'}</div>
+        </div>`).join('')}
+      </div>
+      <div class="br"><button class="btn bti" onclick="goDecide()">Proceed to Decision Phase →</button></div>
+    </div>`;
+  ga.appendChild(c);
+  addLog('A',`T${GS.turn}: ${td.title.split(':')[0]} — severity: ${td.sev}`);
+}
+
+function spendTok(el){
+  if(el.classList.contains('sp'))return;
+  if(GS.toks>=3)return;
+  el.classList.remove('av');el.classList.add('sp');
+  GS.toks++;
+  const s=SC[GS.scen];
+  const td=T[s.turns[GS.tidx]];
+  for(let i=0;i<td.intel.length;i++){
+    if(!GS.revealed.includes(i)){
+      GS.revealed.push(i);
+      const ir=td.intel[i];
+      const el2=document.getElementById(`ir${i}`);
+      if(el2){el2.style.opacity='1';el2.style.borderColor=ir.col;el2.querySelector('.irv').textContent=ir.val;el2.style.animation='fi .35s ease';}
+      break;
+    }
+  }
+  const rem=3-GS.toks;
+  document.getElementById('th2').textContent=`${rem} token${rem!==1?'s':''} remaining`;
+  addLog('S','Intel token spent — intelligence revealed');
+}
+
+function resetToks(){
+  document.getElementById('trow2').innerHTML=`
+    <div class="itk av" onclick="spendTok(this)">🔍</div>
+    <div class="itk av" onclick="spendTok(this)">📡</div>
+    <div class="itk av" onclick="spendTok(this)">⬡</div>`;
+  document.getElementById('th2').textContent='3 tokens · reveals hidden intel before you decide';
+}
+
+function goDecide(){
+  const s=SC[GS.scen];
+  const td=T[s.turns[GS.tidx]];
+  setPhase('decide');
+  const ga=document.getElementById('ga');
+  ga.innerHTML='';
+  const c=makeCard();
+  c.innerHTML=`
+    <div class="pch pcard-hdr">
+      <div class="pbadge" style="border-color:var(--gl);color:var(--gl)">TURN ${GS.turn} · DECISION PHASE</div>
+      <div class="ptitle">${td.title}</div>
+    </div>
+    <div class="pb pcard-body">
+      <div class="dprompt">${td.prompt}</div>
+      <div class="og">
+        ${td.opts.map(o=>`<div class="opt" style="--oc:${o.col}" id="o${o.id}" onclick="selOpt('${o.id}')">
+          <div class="ol">${o.letter}</div>
+          <div class="oti">${o.title}</div>
+          <div class="ob">${o.body}</div>
+          <div class="otrades">${o.trades.map(t=>`<div class="tr ${t.c}">${t.l}</div>`).join('')}</div>
+        </div>`).join('')}
+      </div>
+      <div class="br"><button class="btn btr" id="rbtn" onclick="resolveOpt()" disabled>Resolve Decision →</button></div>
+    </div>`;
+  ga.appendChild(c);
+  addLog('S',`T${GS.turn}: Decision phase — 4 governance options`);
+}
+
+function selOpt(id){
+  GS.selOpt=id;
+  document.querySelectorAll('.opt').forEach(e=>{e.classList.remove('sel');e.style.opacity='.58';});
+  const el=document.getElementById('o'+id);
+  if(el){el.classList.add('sel');el.style.opacity='1';}
+  document.getElementById('rbtn').disabled=false;
+  addLog('S',`Option ${id.toUpperCase()} selected`);
+}
+
+function resolveOpt(){
+  if(!GS.selOpt)return;
+  const s=SC[GS.scen];
+  const td=T[s.turns[GS.tidx]];
+  const o=td.opts.find(x=>x.id===GS.selOpt);
+  if(!o)return;
+  setPhase('resolve');
+  const fx=o.fx;
+  // Apply effects
+  GS.sbom=clamp(GS.sbom+(fx.sbom||0),0,100);
+  GS.hhi=clamp(GS.hhi+(fx.hhi||0),0,1);
+  GS.grey=clamp(GS.grey+(fx.grey||0),0,100);
+  GS.pv=clamp(GS.pv+(fx.pv||0),0,100);
+  GS.tech=clamp(GS.tech+(fx.tech||0),0,100);
+  GS.reg=clamp(GS.reg+(fx.reg||0),0,100);
+  GS.dip=clamp(GS.dip+(fx.dip||0),0,100);
+  GS.pub=clamp(GS.pub+(fx.pub||0),0,100);
+  GS.sci=clamp(GS.sci+(fx.sci||0),0,100);
+  GS.qt=clamp(GS.qt+(fx.qt||0),0,1);
+  GS.qc=clamp(GS.qc+(fx.qc||0),0,1);
+  GS.qn=clamp(GS.qn+(fx.qn||0),0,1);
+  GS.qsc=clamp(GS.qsc+(fx.qsc||0),0,1);
+  GS.qa=clamp(GS.qa+(fx.qa||0),0,1);
+  GS.qd=clamp(GS.qd+(fx.qd||0),0,1);
+  // Domain drift
+  GS.gifd=clamp(GS.gifd+(fx.tech<0?.04:-.02)+(Math.random()-.5)*.025,0,1);
+  GS.gswd=clamp(GS.gswd+(fx.sbom>0?-.03:.03)+(Math.random()-.5)*.025,0,1);
+  GS.scts=clamp(GS.scts+(fx.sci>0?-.04:.04)+(Math.random()-.5)*.02,0,1);
+  const p=psi(),g=gcc();
+  GS.def=Math.min(99,Math.round(p*100));
+  GS.adv=Math.max(3,Math.round((1-p)*40+8));
+  GS.decisions.push({turn:GS.turn,title:o.title,p,g});
+  updateMetrics();
+  addGPF(GS.turn,o.title,p);
+  addLog('D',`T${GS.turn}: ${o.title} — Ψ_v2: ${p.toFixed(3)}`);
+  renderConsequence(o,fx,g,p);
+}
+
+function renderConsequence(o,fx,g,p){
+  const ga=document.getElementById('ga');
+  ga.innerHTML='';
+  const casc=(fx.casc||0)>0.25;
+  const s=SC[GS.scen];
+  const td=T[s.turns[GS.tidx]];
+  const others=td.opts.filter(x=>x.id!==GS.selOpt);
+  const best=others.reduce((b,x)=>{
+    const sv=(x.fx.reg||0)+(x.fx.dip||0)+(x.fx.sci||0)+(x.fx.qsc||0)*80+(x.fx.qc||0)*80;
+    const bv=(b.fx.reg||0)+(b.fx.dip||0)+(b.fx.sci||0)+(b.fx.qsc||0)*80+(b.fx.qc||0)*80;
+    return sv>bv?x:b;
+  },others[0]);
+  const c=makeCard();
+  c.innerHTML=`
+    <div class="pch pcard-hdr">
+      <div class="pbadge" style="border-color:var(--crit);color:var(--crit)">TURN ${GS.turn} · CONSEQUENCE</div>
+      <div class="ptitle">Resolved: ${o.title}</div>
+    </div>
+    <div class="pb pcard-body">
+      <div class="cblock">
+        <div class="ctit">📊 E-AGCO-HT v2.0 Outcome — Δ Metrics</div>
+        <div class="dg2">
+          <div class="db"><div class="dm">g-GCC</div><div style="display:flex;align-items:center;justify-content:center;gap:2px;margin:2px 0"><span class="dbef">${(g+.03).toFixed(3)}</span><span style="color:var(--txd);font-size:.6rem">→</span><span class="daft ${g>.65?'dn2':'dp'}">${g.toFixed(3)}</span></div><div class="ddl ${g>.65?'dn2':'dp'}">${g>.65?'▼ stressed':'▲ stable'}</div></div>
+          <div class="db"><div class="dm">Ψ_v2</div><div style="display:flex;align-items:center;justify-content:center;gap:2px;margin:2px 0"><span class="dbef">${(p-.04).toFixed(3)}</span><span style="color:var(--txd);font-size:.6rem">→</span><span class="daft ${p<.5?'dn2':'dp'}">${p.toFixed(3)}</span></div><div class="ddl ${p<.5?'dn2':'dp'}">${p>=.5?'▲ above threshold':'▼ BELOW THRESHOLD'}</div></div>
+          <div class="db"><div class="dm">SBOM-VIS</div><div style="display:flex;align-items:center;justify-content:center;gap:2px;margin:2px 0"><span class="dbef">${GS.sbom-(fx.sbom||0)}%</span><span style="color:var(--txd);font-size:.6rem">→</span><span class="daft ${GS.sbom<40?'dn2':'dp'}">${GS.sbom}%</span></div><div class="ddl ${GS.sbom<40?'dn2':'dp'}">${GS.sbom<40?'▼ CRITICAL':'▲ improving'}</div></div>
+          <div class="db"><div class="dm">SC-GREY</div><div style="display:flex;align-items:center;justify-content:center;gap:2px;margin:2px 0"><span class="dbef">${GS.grey-(fx.grey||0)}%</span><span style="color:var(--txd);font-size:.6rem">→</span><span class="daft ${GS.grey>25?'dn2':'dp'}">${GS.grey}%</span></div><div class="ddl ${GS.grey>25?'dn2':'dp'}">${GS.grey>25?'▼ elevated':'▲ reducing'}</div></div>
+        </div>
+        ${casc?`<div class="casc"><div class="cai">⚡</div><div class="cab">Cascade triggered. g-GCC cross-domain coupling amplification active. <div class="cam">λ × g-GCC_IFD × g-GCC_SWD = ${(GS.lam*GS.gifd*GS.gswd).toFixed(4)}</div></div></div>`:''}
+        <div style="background:var(--bg3);border:1px solid var(--b1);border-radius:3px;padding:7px 10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--txd);margin-bottom:3px">GOVERNANCE TRACK IMPACTS</div>
+          <div style="font-size:.66rem;color:var(--tx);line-height:1.7">
+            Tech: <span style="color:${fx.tech>=0?'var(--lo)':'var(--crit)'}">${fx.tech>=0?'+':''}${fx.tech||0}%</span> &nbsp;·&nbsp;
+            Reg: <span style="color:${fx.reg>=0?'var(--lo)':'var(--crit)'}">${fx.reg>=0?'+':''}${fx.reg||0}%</span> &nbsp;·&nbsp;
+            Dip: <span style="color:${fx.dip>=0?'var(--lo)':'var(--crit)'}">${fx.dip>=0?'+':''}${fx.dip||0}%</span> &nbsp;·&nbsp;
+            Pub: <span style="color:${fx.pub>=0?'var(--lo)':'var(--crit)'}">${fx.pub>=0?'+':''}${fx.pub||0}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="cfb">
+        <div class="cft">⬡ COUNTERFACTUAL — ALTERNATIVE PATH</div>
+        <div class="cfc">If you had chosen <strong style="color:var(--gov)">${best.title}</strong>: ${best.body.substring(0,110)}... Estimated Ψ_v2 difference: <span style="color:var(--gov);font-family:'JetBrains Mono',monospace">${best.id!==GS.selOpt?(Math.random()*.08+.01).toFixed(3):'+0.000'}</span>. Full counterfactual in After-Action Review.</div>
+      </div>
+      <div class="br">
+        ${fx.final?`<button class="btn bta" onclick="showAAR()">View After-Action Review →</button>`:`<button class="btn btx" onclick="nextTurn()">Proceed to Turn ${GS.turn+1} →</button>`}
+      </div>
+    </div>`;
+  ga.appendChild(c);
+}
+
+function showAAR(){
+  setPhase('aar');
+  const p=psi(),g=gcc();
+  const win=p>=.50;
+  const grade=p>=.80?'EXCELLENT':p>=.65?'PROFICIENT':p>=.50?'ADEQUATE':'BELOW THRESHOLD';
+  const gc=p>=.80?'var(--lo)':p>=.65?'var(--ifd)':p>=.50?'var(--gl)':'var(--crit)';
+  const comps=[
+    {nm:'Q_timing (w=0.30)',v:GS.qt,w:.30},
+    {nm:'Q_coord (w=0.25)',v:GS.qc,w:.25},
+    {nm:'Q_norm (w=0.15)',v:GS.qn,w:.15},
+    {nm:'Q_sctl (w=0.20)',v:GS.qsc,w:.20},
+    {nm:'Q_acc (w=0.10)',v:GS.qa,w:.10},
+    {nm:'Q_domain_sep (ε=0.05)',v:GS.qd,w:.05},
+  ];
+  const ga=document.getElementById('ga');
+  ga.innerHTML='';
+  const c=makeCard();
+  c.innerHTML=`
+    <div class="pch pcard-hdr">
+      <div class="pbadge" style="border-color:var(--swd);color:var(--swd)">AFTER-ACTION REVIEW · E-AGPO-HT v2.0</div>
+      <div class="ptitle">Scenario Complete — ${SC[GS.scen].nm}</div>
+    </div>
+    <div class="pb pcard-body">
+      <div class="arl">
+        <div class="arc">
+          <div class="art">⬡ Ψ_v2 Decision-Path Quality</div>
+          <div class="apc" style="color:${gc}">${p.toFixed(3)}</div>
+          <div class="apl">FINAL Ψ_v2 SCORE</div>
+          <div class="apg" style="background:${gc}22;border:1px solid ${gc};color:${gc}">${grade}</div>
+          ${comps.map(c=>{const col=c.v>=.7?'var(--lo)':c.v>=.5?'var(--gl)':'var(--crit)';return`<div class="pr"><div class="prc">${c.nm}</div><div class="pro"><div class="prf" style="width:${c.v*100}%;background:${col}"></div></div><div class="prs" style="color:${col}">${c.v.toFixed(2)}</div></div>`;}).join('')}
+        </div>
+        <div class="arc">
+          <div class="art">📋 Decision History</div>
+          ${GS.decisions.map(d=>{const dc=d.p>=.6?'var(--lo)':d.p>=.45?'var(--gl)':'var(--crit)';return`<div class="dhr"><div class="dht">TURN ${d.turn}</div><div class="dhc">${d.title}</div><div class="dhp" style="color:${dc}">Ψ=${d.p.toFixed(2)}</div></div>`;}).join('')}
+          <div class="cfb" style="margin-top:8px">
+            <div class="cft">⬡ FINAL E-AGPO-HT v2.0 STATE</div>
+            <div class="cfc">g-GCC: <strong style="color:${g>.7?'var(--crit)':'var(--lo)'}">${g.toFixed(3)}</strong> · SCTS: <strong style="color:var(--sc)">${GS.scts.toFixed(3)}</strong> · SBOM: <strong style="color:var(--swd)">${GS.sbom}%</strong> · SC-GREY: <strong style="color:${GS.grey>25?'var(--crit)':'var(--lo)'}">${GS.grey}%</strong><br><br>${win?'<strong style="color:var(--lo)">✓ Governance threshold met.</strong> Institutional resilience maintained above stability floor.':'<strong style="color:var(--crit)">✗ Below governance threshold.</strong> Ψ_v2 &lt; 0.50. Decision quality insufficient. Replay recommended.'}</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--b1);border-radius:5px;padding:10px 13px;margin-top:10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.51rem;color:var(--gov);letter-spacing:.1em;margin-bottom:7px">⬡ AURACELLE ORION · POLICY IMPLICATIONS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+          <div style="background:var(--bg1);border:1px solid var(--b1);border-radius:4px;padding:8px 9px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--ifd);margin-bottom:4px;letter-spacing:.06em">NIS2 / EO 14028</div>
+            <div style="font-size:.66rem;color:var(--txm);line-height:1.5">SBOM mandates and 72hr notification windows directly mirror obligations tested here. Q_sctl maps to vendor contract governance readiness.</div>
+          </div>
+          <div style="background:var(--bg1);border:1px solid var(--b1);border-radius:4px;padding:8px 9px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--gov);margin-bottom:4px;letter-spacing:.06em">Budapest Convention</div>
+            <div style="font-size:.66rem;color:var(--txm);line-height:1.5">Emerging supply chain integrity provisions modelled via Q_coord and allied CSIRT coordination dynamics across all four scenarios.</div>
+          </div>
+          <div style="background:var(--bg1);border:1px solid var(--b1);border-radius:4px;padding:8px 9px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--sc);margin-bottom:4px;letter-spacing:.06em">E-AGPO-HT Framework</div>
+            <div style="font-size:.66rem;color:var(--txm);line-height:1.5">3-stratum architecture compresses 10–15 year policy cycles to 18–24 months. Applicable to NATO, UN, and national CSIRT governance contexts.</div>
+          </div>
+        </div>
+      </div>
+      <div class="brm">
+        <button class="btn btd" onclick="closeEg();loadS(GS.scen,document.querySelector('.sb.on'))">↺ Replay ${SC[GS.scen].nm}</button>
+        <button class="btn btx" style="flex:1" onclick="closeEg()">⬡ New Scenario</button>
+      </div>
+    </div>`;
+  ga.appendChild(c);
+  addLog('W',`AAR: Ψ_v2=${p.toFixed(3)} · g-GCC=${g.toFixed(3)} · ${grade}`);
+  // Brief endgame flash
+  setTimeout(()=>{
+    const eg=document.getElementById('ego');
+    document.getElementById('egi').textContent=win?'🏛️':'⚠️';
+    document.getElementById('egt').textContent=win?'Governance Threshold Met':'Below Governance Threshold';
+    document.getElementById('egp').textContent=p.toFixed(3);
+    document.getElementById('egp').style.color=gc;
+    document.getElementById('egs').textContent=win?`Ψ_v2=${p.toFixed(3)} — Your decisions maintained institutional resilience above the stability floor.`:`Ψ_v2=${p.toFixed(3)} — Below win threshold (0.50). See After-Action Review for counterfactual analysis.`;
+    eg.classList.add('on');
+    setTimeout(()=>eg.classList.remove('on'),4200);
+  },600);
+}
+
+function nextTurn(){GS.tidx++;startTurn();}
+function closeEg(){document.getElementById('ego').classList.remove('on');}
+
+// ═══════ Helpers ═══════
+function makeCard(){const d=document.createElement('div');d.className='pc';return d;}
+
+function setPhase(ph){
+  const map={intel:'ph1',decide:'ph2',resolve:'ph3',aar:'ph4'};
+  document.querySelectorAll('.ph').forEach(e=>e.classList.remove('on'));
+  const el=document.getElementById(map[ph]);
+  if(el)el.classList.add('on');
+}
+
+function addLog(tag,msg){
+  const el=document.getElementById('elog');
+  const d=document.createElement('div');d.className='le';
+  d.innerHTML=`<div class="lt">T-${GS.turn}</div><div class="ltg ${tag}">${{A:'ADV',D:'DEF',G:'GOV',S:'SYS',W:'WIN'}[tag]||tag}</div><div class="lm">${msg}</div>`;
+  el.prepend(d);
+}
+
+function addGPF(turn,title,p){
+  const el=document.getElementById('gpf');
+  const pc=p>=.6?'var(--lo)':p>=.45?'var(--gl)':'var(--crit)';
+  const d=document.createElement('div');d.className='gfr';
+  d.innerHTML=`<div class="gft">T-${turn}</div><div class="gfc">${title}</div><div class="gfp" style="color:${pc}">Ψ=${p.toFixed(2)}</div>`;
+  el.prepend(d);
+}
+
+function updateMetrics(){
+  const g=gcc(),p=psi();
+  // GCC
+  const gv=document.getElementById('gv');
+  gv.textContent=g.toFixed(3);
+  gv.style.color=g>.7?'var(--crit)':g>.5?'var(--hi)':'var(--swd)';
+  const gth=document.getElementById('gth');
+  if(g>.7){gth.style.cssText='background:rgba(232,84,84,.08);border:1px solid var(--crit);color:var(--crit)';gth.textContent='⚠ ABOVE CASCADE THRESHOLD (0.70)';}
+  else{gth.style.cssText='background:rgba(78,201,138,.08);border:1px solid var(--swd);color:var(--swd)';gth.textContent='BELOW CASCADE (0.70)';}
+  // Domain boxes
+  function ud(id,v,label){
+    const b=document.getElementById(`db-${id}`);
+    const vEl=document.getElementById(`dv-${id}`);
+    const sEl=document.getElementById(`ds-${id}`);
+    if(vEl){vEl.textContent=v.toFixed(2);vEl.style.color=v>.6?'var(--crit)':v>.4?'var(--hi)':'var(--swd)';}
+    if(sEl)sEl.textContent=v>.6?'CRITICAL':v>.4?'ELEVATED':'NOMINAL';
+    if(b)b.classList.toggle('st',v>.5);
+  }
+  ud('i',GS.gifd);ud('s',GS.gswd);ud('c',GS.scts);ud('g',(1-p)*.35);
+  // Threat bars
+  function ut(id,w,txt,col){
+    const f=document.getElementById(`tb-${id}`);const t=document.getElementById(`tv-${id}`);
+    if(f){f.style.width=w+'%';f.style.background=col;}
+    if(t){t.textContent=txt;t.style.color=col;}
+  }
+  ut('s',GS.sbom,GS.sbom+'%',GS.sbom<40?'var(--crit)':GS.sbom<70?'var(--hi)':'var(--swd)');
+  ut('h',GS.hhi*100,GS.hhi.toFixed(2),GS.hhi>.5?'var(--crit)':GS.hhi>.3?'var(--hi)':'var(--lo)');
+  ut('g',GS.grey,GS.grey+'%',GS.grey>30?'var(--crit)':GS.grey>15?'var(--hi)':'var(--lo)');
+  ut('p',GS.pv,GS.pv+'%',GS.pv<40?'var(--crit)':GS.pv<65?'var(--hi)':'var(--swd)');
+  // Psi live
+  const plv=document.getElementById('plv');
+  const pc=p>=.65?'var(--lo)':p>=.5?'var(--gl)':'var(--crit)';
+  plv.textContent=p.toFixed(3);plv.style.color=pc;
+  const ptbf=document.getElementById('ptbf');
+  if(ptbf){ptbf.style.width=(p*100)+'%';ptbf.style.background=pc;}
+  // Governance tracks
+  function gt(id,v,col){
+    const el=document.getElementById(`gtv-${id}`);const bf=document.getElementById(`gtb-${id}`);
+    if(el){el.textContent=v+'%';}
+    if(bf){bf.style.width=v+'%';bf.style.background=col;}
+  }
+  gt('t',GS.tech,'var(--swd)');gt('r',GS.reg,'var(--ifd)');gt('d',GS.dip,'var(--gov)');gt('p',GS.pub,'var(--gl)');gt('sc',GS.sci,'var(--sc)');
+  gt('ca',GS.cult,'var(--txm)');gt('mp',GS.mis,'var(--crit)');gt('aq',GS.ally,'var(--gov)');
+  // Header scores
+  document.getElementById('hdef').textContent=GS.def;
+  document.getElementById('hadv').textContent=GS.adv;
+}
+
+function endGame(){showAAR();}
+
+// ═══════ Governance Artifact Handler ═══════
+// ═══════ E-AGPO-HT v2.0 Offline Pattern Engine ═══════
+// Fully standalone — no API, no network. Works on any file type.
+
+const EAGPOHT = {
+
+  // ── Document type classifier ──
+  classifyDoc(t){
+    const tl=t.toLowerCase();
+    if(/tabletop|ttx|table.top|exercise|inject|facilitator|scenario inject/.test(tl)) return 'Tabletop Exercise';
+    if(/disaster.recov|drp|business.continu|bcp|rto|rpo|recovery.time|recovery.point/.test(tl)) return 'Disaster Recovery SOP';
+    if(/incident.report|post.incident|postmortem|post-mortem|lessons.learned|timeline of events|root.cause/.test(tl)) return 'Incident Report';
+    if(/soc.report|security.operations|soc 2|soc2|type ii|audit.report|penetration.test|pentest|vulnerability.assessment/.test(tl)) return 'SOC Report';
+    if(/policy|framework|governance|standard|procedure|playbook|runbook/.test(tl)) return 'Governance Framework / SOP';
+    return 'Governance Document';
+  },
+
+  // ── Stressor detection rules ──
+  // Each rule: { id, label, patterns (trigger), negPatterns (suppress if present), severity, finding(text) }
+  STRESSORS: [
+    { id:'SC-SBOM', label:'SBOM Visibility Gap',
+      patterns:[/sbom/i,/software.bill.of.material/i,/component.inventor/i,/dependency.list/i,/package.manifest/i,/supply.chain.transparency/i],
+      gapPatterns:[/no.sbom/i,/sbom.not/i,/without.sbom/i,/lack.*sbom/i,/sbom.*gap/i,/sbom.*absent/i,/no.bill.of.material/i],
+      presenceScore: 0.4, absenceScore: 0.75,
+      findingPresent:'Document references SBOM or component inventory — coverage and completeness not confirmed.',
+      findingAbsent:'No SBOM or software component inventory referenced — SC-SBOM stressor fully active.',
+      severity:'HIGH' },
+    { id:'SC-CONC', label:'Vendor Concentration (HHI)',
+      patterns:[/single.vendor/i,/vendor.concentrat/i,/sole.source/i,/single.source/i,/third.party.*depend/i,/vendor.*lock/i,/monoculture/i,/concentration.risk/i,/hhi/i],
+      gapPatterns:[/diversif/i,/multi.vendor/i,/redundant.*vendor/i],
+      presenceScore: 0.6, absenceScore: 0.3,
+      findingPresent:'Vendor concentration risk patterns detected — single-source or sole-vendor dependencies identified.',
+      findingAbsent:'No explicit vendor diversification strategy documented — concentration exposure unquantified.',
+      severity:'HIGH' },
+    { id:'SC-GREY', label:'Grey-Market / Unverified Hardware',
+      patterns:[/grey.market/i,/gray.market/i,/unauthorized.*hardware/i,/unverified.*component/i,/hardware.*provenance/i,/hw.bom/i,/hardware.bill/i,/counterfeit/i,/unapproved.*vendor/i,/non-standard.*hardware/i],
+      gapPatterns:[/hardware.*verified/i,/approved.*hardware/i,/hardware.*certified/i],
+      presenceScore: 0.7, absenceScore: 0.2,
+      findingPresent:'Grey-market or unverified hardware risk referenced — SC-GREY stressor active.',
+      findingAbsent:'No hardware provenance or HW-BOM procedures documented — SC-GREY exposure uncontrolled.',
+      severity:'MED' },
+    { id:'SC-PATCH', label:'Patch Latency / SLA Gap',
+      patterns:[/patch/i,/vulnerability.*manag/i,/cve/i,/remediat/i,/update.*cycle/i,/patch.*sla/i,/patch.*window/i,/patchin/i,/unpatched/i,/end.of.life/i,/eol/i,/legacy.*system/i],
+      gapPatterns:[/patch.*current/i,/fully.*patched/i,/patch.*compli/i],
+      presenceScore: 0.5, absenceScore: 0.65,
+      findingPresent:'Patch management or vulnerability remediation processes referenced — SLA adherence and OT coverage not confirmed.',
+      findingAbsent:'No patch management or vulnerability remediation SLA documented — SC-PATCH stressor active.',
+      severity:'HIGH' },
+    { id:'IFD', label:'Infrastructure Dependency',
+      patterns:[/infrastructure/i,/ics/i,/ot\b/i,/scada/i,/industrial.control/i,/operational.technology/i,/critical.infrastructure/i,/data.center/i,/network.segment/i,/firewall/i,/perimeter/i],
+      gapPatterns:[/infrastructure.*resilient/i,/redundant.*infrastructure/i],
+      presenceScore: 0.45, absenceScore: 0.35,
+      findingPresent:'Infrastructure or ICS/OT systems in scope — dependency mapping and resilience not fully assessed.',
+      findingAbsent:'Limited infrastructure dependency mapping evident in document.',
+      severity:'MED' },
+    { id:'SWD', label:'Software Dependency Risk',
+      patterns:[/software.depend/i,/open.source/i,/oss\b/i,/third.party.*softwar/i,/library/i,/framework/i,/api.*integrat/i,/cloud.*service/i,/saas/i,/npm/i,/pypi/i,/package.*manager/i],
+      gapPatterns:[/dependency.*audit/i,/software.*invent/i,/approved.*softwar/i],
+      presenceScore: 0.45, absenceScore: 0.4,
+      findingPresent:'Software dependencies or third-party libraries referenced — supply chain trust verification not confirmed.',
+      findingAbsent:'No software dependency management or OSS governance documented.',
+      severity:'MED' },
+    { id:'Q-COORD', label:'CSIRT / Allied Coordination Gap',
+      patterns:[/csirt/i,/cert\b/i,/coordination/i,/information.shar/i,/isac/i,/stix/i,/taxii/i,/notification/i,/escalat/i,/liaison/i,/nato/i,/allied/i,/partner.*agenc/i],
+      gapPatterns:[/no.*csirt/i,/lack.*coordinat/i,/coordinat.*gap/i,/coordinat.*fail/i],
+      presenceScore: 0.55, absenceScore: 0.3,
+      findingPresent:'Coordination or information-sharing mechanisms referenced — inter-institutional quality not fully defined.',
+      findingAbsent:'No CSIRT coordination or allied information-sharing procedures documented — Q_coord gap active.',
+      severity:'HIGH' },
+    { id:'NDM', label:'Normative Decision Authority',
+      patterns:[/decision.authorit/i,/escalat.*authoriz/i,/approv.*authorit/i,/command.*chain/i,/chain.of.command/i,/authoriz.*framework/i,/hitl/i,/human.in.the.loop/i,/decision.maker/i],
+      gapPatterns:[/unclear.*authorit/i,/no.*escalat/i,/authority.*gap/i],
+      presenceScore: 0.6, absenceScore: 0.35,
+      findingPresent:'Decision authority or escalation paths documented — clarity and completeness under stress not verified.',
+      findingAbsent:'Decision authority framework absent or incomplete — NDM stressor active under incident conditions.',
+      severity:'MED' },
+    { id:'SRA', label:'Stress Response Adaptation',
+      patterns:[/stress.test/i,/exercis/i,/drill/i,/simulation/i,/red.team/i,/blue.team/i,/purple.team/i,/tabletop/i,/wargam/i,/scenario/i,/inject/i,/after.action/i,/lessons.learned/i],
+      gapPatterns:[/no.*test/i,/never.*exercis/i,/untested/i],
+      presenceScore: 0.7, absenceScore: 0.3,
+      findingPresent:'Stress-testing or exercise activities documented — frequency and scope of coverage not confirmed.',
+      findingAbsent:'No evidence of stress-testing, exercises, or red-team activity — SRA baseline low.',
+      severity:'MED' },
+    { id:'REG', label:'Regulatory Compliance Gap',
+      patterns:[/nis2/i,/nist/i,/eo.14028/i,/executive.order/i,/cisa/i,/gdpr/i,/eu.cra/i,/cyber.resilience.act/i,/iso.270/i,/soc.2/i,/hipaa/i,/cmmc/i,/fedramp/i,/compliance/i,/audit/i,/regulat/i],
+      gapPatterns:[/non.compli/i,/fail.*audit/i,/regulat.*gap/i,/not.*certif/i],
+      presenceScore: 0.65, absenceScore: 0.4,
+      findingPresent:'Regulatory frameworks referenced — compliance posture and gap remediation timeline not fully confirmed.',
+      findingAbsent:'No regulatory compliance framework or audit trail referenced in document.',
+      severity:'MED' },
+  ],
+
+  // ── Stratum II BGC capability scoring ──
+  scoreStratum2(t){
+    const tl=t.toLowerCase();
+    const score=(pats,boost=[],penalty=[])=>{
+      let s=0.40; // baseline
+      pats.forEach(p=>{ if(p.test(tl)) s+=0.08; });
+      boost.forEach(p=>{ if(p.test(tl)) s+=0.12; });
+      penalty.forEach(p=>{ if(p.test(tl)) s-=0.12; });
+      return Math.max(0.05,Math.min(0.98,s));
+    };
+    return {
+      STI: score([/threat.intel/i,/ioc/i,/ttp/i,/threat.actor/i,/intelligence/i,/stix/i,/taxii/i],
+                 [/threat.hunt/i,/attribution/i],[/no.*intel/i,/intel.*gap/i]),
+      SAD: score([/monitor/i,/detect/i,/siem/i,/alert/i,/visibility/i,/log/i,/dashboard/i],
+                 [/real.time/i,/anomaly/i],[/blind.spot/i,/no.*monitor/i,/undetect/i]),
+      ESI: score([/integrat/i,/ecosystem/i,/partner/i,/vendor/i,/third.party/i,/api/i,/supply.chain/i],
+                 [/verified.*integrat/i],[/no.*integrat/i,/integrat.*gap/i]),
+      NDM: score([/decision/i,/authorit/i,/escalat/i,/approv/i,/governance/i,/policy/i],
+                 [/clear.*authorit/i,/hitl/i],[/unclear/i,/no.*escalat/i]),
+      SRA: score([/recover/i,/restor/i,/resilience/i,/continuity/i,/backup/i,/failover/i,/rto/i,/rpo/i],
+                 [/tested/i,/verified/i,/exercis/i],[/untested/i,/never.*test/i,/no.*backup/i]),
+      IIC: score([/coordinat/i,/communicat/i,/notify/i,/csirt/i,/cert/i,/liaison/i,/partner/i,/shared/i],
+                 [/formal.*agreement/i,/mou/i],[/no.*coordinat/i,/coordinat.*gap/i]),
+      ASI: score([/adversar/i,/threat.model/i,/attack.*vector/i,/red.team/i,/ttps/i,/mitre/i,/att&ck/i,/kill.chain/i],
+                 [/red.team/i,/threat.model/i],[/no.*threat.model/i,/adversar.*unknown/i]),
+    };
+  },
+
+  // ── Document summary generator ──
+  summarise(t, docType, fname){
+    const tl=t.toLowerCase();
+    const words=t.split(/\s+/).length;
+    const hasDate=/\b(19|20)\d{2}\b/.test(t);
+    const scope=[];
+    if(/incident/i.test(tl)) scope.push('incident response');
+    if(/recover/i.test(tl)) scope.push('recovery procedures');
+    if(/supply.chain/i.test(tl)||/vendor/i.test(tl)) scope.push('supply chain governance');
+    if(/ics|scada|ot\b/i.test(tl)) scope.push('OT/ICS systems');
+    if(/cloud/i.test(tl)) scope.push('cloud infrastructure');
+    if(/patch/i.test(tl)) scope.push('patch management');
+    if(/csirt|cert\b/i.test(tl)) scope.push('CSIRT coordination');
+    if(/compliance|regulat/i.test(tl)) scope.push('regulatory compliance');
+    const scopeStr = scope.length>0 ? scope.slice(0,3).join(', ') : 'cybersecurity governance procedures';
+    const datePart = hasDate ? ` Document contains dated references.` : '';
+    return `${docType} covering ${scopeStr} (approx. ${words.toLocaleString()} words extracted from ${fname}).${datePart} Analysed against E-AGPO-HT v2.0 stressor vocabulary for governance gap identification and scenario recommendation.`;
+  },
+
+  // ── Scenario recommendation logic ──
+  recommendScenario(stressors, t){
+    const tl=t.toLowerCase();
+    const ids=stressors.map(s=>s.id);
+    const scores={mirage:0, ironclad:0, fracture:0, phantom:0};
+
+    // MIRAGE CHAIN — software supply chain, SBOM gaps, OSS, patch latency
+    if(ids.includes('SC-SBOM')) scores.mirage+=3;
+    if(ids.includes('SC-PATCH')) scores.mirage+=2;
+    if(ids.includes('SWD')) scores.mirage+=2;
+    if(/open.source|oss\b|npm|pypi|package.*registry/i.test(tl)) scores.mirage+=2;
+
+    // IRONCLAD SIEGE — OT/ICS hardware, infrastructure, grey-market, DR/recovery scope
+    if(ids.includes('SC-GREY')) scores.ironclad+=3;
+    if(ids.includes('IFD')) scores.ironclad+=2;
+    if(/ics\b|scada|ot\b|operational.technology|industrial.control/i.test(tl)) scores.ironclad+=3;
+    if(/hardware/i.test(tl)) scores.ironclad+=1;
+    if(/disaster.recov|drp\b|business.continu|bcp\b|rto\b|rpo\b/i.test(tl)) scores.ironclad+=2;
+    if(/infrastructure.*restor|restor.*infrastructure|network.*recover/i.test(tl)) scores.ironclad+=2;
+    if(/backup.*site|alternate.*site|failover.*site/i.test(tl)) scores.ironclad+=1;
+
+    // FRACTURE POINT — cloud, concentration, CSIRT coordination failure
+    if(ids.includes('SC-CONC')) scores.fracture+=3;
+    if(/cloud\b|saas\b|paas\b|iaas\b/i.test(tl)) scores.fracture+=3;
+    if(ids.includes('Q-COORD')) scores.fracture+=2;
+    if(/coordinat.*fail|csirt.*gap|notification.*gap/i.test(tl)) scores.fracture+=2;
+    if(/dependency.poison|oss.*maintainer|maintainer.*compromis/i.test(tl)) scores.fracture+=2;
+
+    // PHANTOM CIRCUIT — nation-state, NC3, long-dwell, attribution
+    if(/nation.state|apt\b|advanced.persistent/i.test(tl)) scores.phantom+=4;
+    if(/nc3\b|nuclear|long.dwell|persistent.*threat|implant/i.test(tl)) scores.phantom+=3;
+    if(ids.includes('NDM')) scores.phantom+=1;
+    if(/attribution/i.test(tl)) scores.phantom+=2;
+
+    const best=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+    const rationale={
+      mirage:'Software supply chain gaps, SBOM deficiencies, and patch latency align with the MIRAGE CHAIN SolarWinds-class scenario.',
+      ironclad:'Infrastructure scope, ICS/OT systems, and recovery procedure gaps align with the IRONCLAD SIEGE Industroyer-class scenario.',
+      fracture:'Vendor concentration and cloud dependency patterns align with the FRACTURE POINT XZ Utils-class scenario.',
+      phantom:'Nation-state indicators and normative decision gaps align with the PHANTOM CIRCUIT NC3-adjacent implant scenario.',
+    };
+    return {scenario:best, rationale:rationale[best]};
+  },
+
+  // ── Gap and strength extractor ──
+  extractGapsStrengths(stressors, t, stratum2){
+    const tl=t.toLowerCase();
+    const gaps=[];
+    const strengths=[];
+    // Derive gaps from activated high/critical stressors
+    stressors.filter(s=>s.severity==='CRITICAL'||s.severity==='HIGH').forEach(s=>{
+      if(s.id==='SC-SBOM') gaps.push('No machine-readable SBOM or software component inventory — zero-visibility supply chain exposure');
+      if(s.id==='SC-PATCH') gaps.push('Patch management SLA and OT-specific patch pathway not documented');
+      if(s.id==='Q-COORD') gaps.push('CSIRT coordination and allied notification procedures absent or incomplete');
+      if(s.id==='SC-CONC') gaps.push('Vendor concentration risk unquantified — HHI metric absent from governance framework');
+    });
+    stressors.filter(s=>s.severity==='MED').forEach(s=>{
+      if(s.id==='NDM') gaps.push('Decision authority and escalation paths not clearly mapped for high-stress scenarios');
+      if(s.id==='SC-GREY') gaps.push('Hardware provenance verification and HW-BOM requirements not established');
+      if(s.id==='REG') gaps.push('Regulatory compliance posture (NIS2 / EO 14028 / EU CRA) not explicitly mapped');
+    });
+    // Derive strengths from high Stratum II scores
+    if(stratum2.SRA>0.65) strengths.push('Stress response and recovery procedures documented — SRA baseline above threshold');
+    if(stratum2.NDM>0.65) strengths.push('Decision authority and governance escalation paths established');
+    if(stratum2.SAD>0.65) strengths.push('Detection and monitoring capabilities referenced — situational awareness foundation present');
+    if(stratum2.IIC>0.65) strengths.push('Coordination and communication frameworks documented');
+    if(/test|exercis|drill/i.test(tl)) strengths.push('Evidence of testing or exercise activity — SRA engagement demonstrated');
+    if(/backup|failover|redundan/i.test(tl)) strengths.push('Backup and failover provisions included — continuity baseline established');
+    if(gaps.length===0) gaps.push('Insufficient governance artifact detail to identify specific E-AGPO-HT gaps — recommend richer documentation');
+    if(strengths.length===0) strengths.push('Baseline governance documentation present — provides foundation for E-AGPO-HT stress-testing');
+    return {gaps:gaps.slice(0,5), strengths:strengths.slice(0,4)};
+  },
+
+  // ── Baseline adjustment calculator ──
+  calcAdjustments(stressors, stratum2, t){
+    const tl=t.toLowerCase();
+    const adj={sbom:0,grey:0,hhi:0,tech:0,reg:0,dip:0,pub:0,sci:0,cult:0,ally:0};
+    stressors.forEach(s=>{
+      const sev={CRITICAL:-15,HIGH:-10,MED:-5,LOW:0};
+      const delta=sev[s.severity]||0;
+      if(s.id==='SC-SBOM') adj.sbom+=delta;
+      if(s.id==='SC-GREY') adj.grey+=(-delta*2); // grey expressed as % present
+      if(s.id==='SC-CONC') adj.hhi+=0.08;
+      if(s.id==='SC-PATCH') adj.tech+=delta;
+      if(s.id==='REG') adj.reg+=delta;
+      if(s.id==='Q-COORD'){adj.dip+=delta; adj.ally+=delta;}
+    });
+    if(stratum2.SAD>0.7) adj.tech+=8;
+    if(stratum2.SRA>0.7){adj.tech+=5; adj.sci+=5;}
+    if(/compli/i.test(tl)) adj.reg+=5;
+    if(/nato|un\b|allied|international/i.test(tl)) adj.dip+=8;
+    return adj;
+  },
+
+  // ── Policy implication generator ──
+  policyImplication(stressors, docType, rec){
+    const ids=stressors.map(s=>s.id);
+    const regs=[];
+    if(ids.includes('SC-SBOM')) regs.push('EO 14028 SBOM mandate');
+    if(ids.includes('SC-PATCH')) regs.push('CISA KEV patch SLA');
+    if(ids.includes('Q-COORD')) regs.push('NIS2 72-hour notification');
+    if(ids.includes('REG')) regs.push('EU CRA vendor obligations');
+    const regStr=regs.length>0?regs.join(', '):'NIS2 and EO 14028';
+    return `This ${docType.toLowerCase()} reveals governance gaps directly relevant to ${regStr} obligations across regulatory and governance frameworks. The recommended ${rec.toUpperCase()} scenario stress-tests the specific decision pathways where this document's posture is weakest, compressing the policy remediation cycle through E-AGPO-HT game-theoretic simulation.`;
+  },
+
+  // ── Master analysis entry point ──
+  analyse(text, fname){
+    const tl=text.toLowerCase();
+    const docType=this.classifyDoc(text);
+    // Score each stressor
+    const activated=[];
+    this.STRESSORS.forEach(s=>{
+      const hits=s.patterns.filter(p=>p.test(tl)).length;
+      const gapHits=(s.gapPatterns||[]).filter(p=>p.test(tl)).length;
+      if(hits>0||gapHits>0){
+        const sev=(gapHits>0&&s.severity==='MED')?'HIGH':(gapHits>1?'CRITICAL':s.severity);
+        activated.push({
+          id:s.id, label:s.label, severity:sev,
+          finding: hits>0 ? s.findingPresent : s.findingAbsent
+        });
+      } else {
+        // Add low-severity finding for absent but critical stressors
+        if(['SC-SBOM','SC-PATCH','Q-COORD'].includes(s.id)){
+          activated.push({id:s.id, label:s.label, severity:'HIGH', finding:s.findingAbsent});
+        }
+      }
+    });
+    // Sort by severity
+    const sevRank={CRITICAL:0,HIGH:1,MED:2,LOW:3};
+    activated.sort((a,b)=>(sevRank[a.severity]||3)-(sevRank[b.severity]||3));
+
+    const stratum2=this.scoreStratum2(text);
+    const rec=this.recommendScenario(activated, text);
+    const {gaps,strengths}=this.extractGapsStrengths(activated, text, stratum2);
+    const adj=this.calcAdjustments(activated, stratum2, text);
+    const summary=this.summarise(text, docType, fname);
+    const policy=this.policyImplication(activated, docType, rec.scenario);
+
+    return {
+      docType, summary,
+      stressorsActivated: activated,
+      stratumiReadings: stratum2,
+      baselineAdjustments: adj,
+      recommendedScenario: rec.scenario,
+      recommendedRationale: rec.rationale,
+      gaps, strengths,
+      policyImplications: policy
+    };
+  }
+};
+
+// ── File reading: txt/md, docx (mammoth), pdf (PDF.js) ──
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    if(document.querySelector(`script[src="${src}"]`)){res();return;}
+    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function extractText(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='txt'||ext==='md'||ext==='csv'){
+    return await file.text();
+  }
+  if(ext==='docx'){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+    const buf=await file.arrayBuffer();
+    const result=await mammoth.extractRawText({arrayBuffer:buf});
+    return result.value||'';
+  }
+  if(ext==='pdf'){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    let out='';
+    for(let i=1;i<=Math.min(pdf.numPages,40);i++){
+      const pg=await pdf.getPage(i);
+      const content=await pg.getTextContent();
+      out+=content.items.map(it=>it.str).join(' ')+'\n';
+    }
+    return out;
+  }
+  // Fallback: try reading as text
+  try{ return await file.text(); }
+  catch(e){ throw new Error(`Unsupported file type: .${ext}. Please use .txt, .md, .docx, or .pdf`); }
+}
+
+async function handleArtifact(input){
+  const file=input.files[0];
+  if(!file)return;
+  input.value=''; // reset so same file can be re-selected
+  const status=document.getElementById('art-status');
+  status.style.display='block';
+  status.textContent='Reading document…';
+  // Reset download button
+  const dlBtn=document.getElementById('art-download-btn');
+  if(dlBtn) dlBtn.style.display='none';
+  let text='';
+  try{
+    text=await extractText(file);
+    if(!text||text.trim().length<20) throw new Error('Document appears empty or could not be parsed.');
+    if(text.length>40000) text=text.slice(0,40000);
+  }catch(e){
+    status.textContent=`⚠ ${e.message}`;
+    return;
+  }
+  status.textContent='⬡ Mapping to E-AGPO-HT v2.0 stressors…';
+  document.getElementById('art-modal-title').textContent=`Artifact: ${file.name}`;
+  document.getElementById('art-modal-body').innerHTML='<div style="text-align:center;padding:24px;color:var(--txd);font-family:\'JetBrains Mono\',monospace;font-size:.6rem">Running E-AGPO-HT v2.0 pattern analysis…</div>';
+  document.getElementById('art-modal').classList.add('on');
+  // Small async gap so modal renders before heavy analysis
+  await new Promise(r=>setTimeout(r,80));
+  try{
+    const r=EAGPOHT.analyse(text, file.name);
+    renderArtifactAnalysis(r, file.name);
+    status.textContent=`✓ ${file.name} · ${r.docType} · Recommended: ${r.recommendedScenario.toUpperCase()}`;
+    addLog('G',`Artifact: ${file.name} — ${r.stressorsActivated.length} stressors · Rec: ${r.recommendedScenario.toUpperCase()}`);
+    // Apply baseline adjustments
+    const adj=r.baselineAdjustments;
+    if(adj.sbom) GS.sbom=Math.max(0,Math.min(100,GS.sbom+(adj.sbom||0)));
+    if(adj.tech) GS.tech=Math.max(0,Math.min(100,GS.tech+(adj.tech||0)));
+    if(adj.reg)  GS.reg =Math.max(0,Math.min(100,GS.reg +(adj.reg ||0)));
+    if(adj.dip)  GS.dip =Math.max(0,Math.min(100,GS.dip +(adj.dip ||0)));
+    if(adj.pub)  GS.pub =Math.max(0,Math.min(100,GS.pub +(adj.pub ||0)));
+    if(adj.sci)  GS.sci =Math.max(0,Math.min(100,GS.sci +(adj.sci ||0)));
+    if(adj.cult) GS.cult=Math.max(0,Math.min(100,GS.cult+(adj.cult||0)));
+    if(adj.ally) GS.ally=Math.max(0,Math.min(100,GS.ally+(adj.ally||0)));
+    if(adj.grey!=null) GS.grey=Math.max(0,Math.min(100,GS.grey+(adj.grey||0)));
+    if(adj.hhi!=null)  GS.hhi =Math.max(0,Math.min(1,  GS.hhi +(adj.hhi ||0)));
+    updateMetrics();
+  }catch(err){
+    document.getElementById('art-modal-body').innerHTML=`<div style="font-size:.75rem;color:var(--crit);line-height:1.6">Analysis error: ${err.message}</div>`;
+    status.textContent='⚠ Analysis error — see modal for details';
+  }
+}
+
+function renderArtifactAnalysis(r, fname){
+  window._lastArtifact = {r, fname}; // store for download
+  const sevCol={CRITICAL:'var(--crit)',HIGH:'var(--hi)',MED:'var(--gl)',LOW:'var(--lo)'};
+  const scCol={mirage:'var(--ifd)',ironclad:'var(--crit)',fracture:'var(--swd)',phantom:'var(--gov)'};
+  const html=`
+    <div style="background:var(--bg2);border:1px solid var(--b1);border-radius:4px;padding:9px 11px;margin-bottom:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--ifd);margin-bottom:4px;letter-spacing:.08em">${r.docType.toUpperCase()}</div>
+      <div style="font-size:.77rem;color:var(--tx);line-height:1.6">${r.summary}</div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--txd);letter-spacing:.1em;margin-bottom:7px">E-AGPO-HT STRESSORS ACTIVATED</div>
+      ${r.stressorsActivated.map(s=>`
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--b1)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.54rem;font-weight:700;color:${sevCol[s.severity]||'var(--hi)'};min-width:62px;flex-shrink:0">${s.id}</span>
+          <div style="flex:1"><div style="font-family:'JetBrains Mono',monospace;font-size:.51rem;color:${sevCol[s.severity]||'var(--hi)'};margin-bottom:2px">${s.severity}</div><div style="font-size:.7rem;color:var(--txm);line-height:1.45">${s.finding}</div></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:var(--bg0);border:1px solid var(--b1);border-radius:4px;padding:9px 10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--crit);margin-bottom:5px;letter-spacing:.06em">GOVERNANCE GAPS</div>
+        ${r.gaps.map(g=>`<div style="font-size:.7rem;color:var(--txm);line-height:1.5;padding:2px 0;border-bottom:1px solid var(--b1)">⚠ ${g}</div>`).join('')}
+      </div>
+      <div style="background:var(--bg0);border:1px solid var(--b1);border-radius:4px;padding:9px 10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--lo);margin-bottom:5px;letter-spacing:.06em">STRENGTHS IDENTIFIED</div>
+        ${r.strengths.map(s=>`<div style="font-size:.7rem;color:var(--txm);line-height:1.5;padding:2px 0;border-bottom:1px solid var(--b1)">✓ ${s}</div>`).join('')}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px">
+      ${Object.entries(r.stratumiReadings).map(([k,v])=>{const col=v>=.7?'var(--lo)':v>=.5?'var(--gl)':'var(--crit)';return`<div style="text-align:center;background:var(--bg2);border:1px solid var(--b1);border-radius:3px;padding:5px 3px"><div style="font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--txd);margin-bottom:2px">${k}</div><div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:.82rem;color:${col}">${(v*100).toFixed(0)}%</div></div>`;}).join('')}
+    </div>
+    <div style="background:${scCol[r.recommendedScenario]||'var(--ifd)'}18;border:1px solid ${scCol[r.recommendedScenario]||'var(--ifd)'};border-radius:4px;padding:9px 11px;margin-bottom:10px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:${scCol[r.recommendedScenario]||'var(--ifd)'};margin-bottom:4px;letter-spacing:.08em">RECOMMENDED SCENARIO: ${r.recommendedScenario.toUpperCase()}</div>
+      <div style="font-size:.72rem;color:var(--txm);line-height:1.5">${r.recommendedRationale}</div>
+    </div>
+    <div style="background:var(--govd);border:1px solid #cdb8e8;border-radius:4px;padding:9px 11px;margin-bottom:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--gov);margin-bottom:4px;letter-spacing:.08em">⬡ AURACELLE ORION · POLICY CONTEXT</div>
+      <div style="font-size:.72rem;color:var(--txm);line-height:1.5">${r.policyImplications}</div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);padding-top:8px;border-top:1px solid var(--b1)">Simulation baseline has been adjusted to reflect this artifact's governance posture. Select the recommended scenario to run a personalised stress-test.</div>`;
+  document.getElementById('art-modal-body').innerHTML=html;
+  // Reveal download button now that analysis is ready
+  const btn=document.getElementById('art-download-btn');
+  if(btn){btn.style.display='inline-block';}
+  const sp=document.getElementById('art-download-spacer');
+  if(sp){sp.style.display='none';}
+}
+
+function downloadArtifactReport(){
+  const d=window._lastArtifact;
+  if(!d)return;
+  const {r,fname}=d;
+  const ts=new Date().toISOString().slice(0,16).replace('T',' ');
+  const sevLabel={CRITICAL:'[CRITICAL]',HIGH:'[HIGH]   ',MED:'[MED]    ',LOW:'[LOW]    '};
+  const lines=[
+    '═══════════════════════════════════════════════════════════════',
+    '  AURACELLE ORION v4 · GOVERNANCE ARTIFACT STRESS-TEST REPORT',
+    '  E-AGPO-HT v2.0 · Auracelle AI Governance Labs · Evans 2026',
+    '  Auracelle AI Governance Labs · 2026',
+    '═══════════════════════════════════════════════════════════════',
+    '',
+    `  Source document : ${fname}`,
+    `  Document type   : ${r.docType}`,
+    `  Generated       : ${ts} UTC`,
+    '',
+    '───────────────────────────────────────────────────────────────',
+    '  DOCUMENT SUMMARY',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    `  ${r.summary}`,
+    '',
+    '───────────────────────────────────────────────────────────────',
+    '  E-AGPO-HT STRESSORS ACTIVATED',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    ...r.stressorsActivated.map(s=>[
+      `  ${sevLabel[s.severity]||'[INFO]   '} ${s.id} — ${s.label||s.id}`,
+      `             ${s.finding}`,
+      ''
+    ]).flat(),
+    '───────────────────────────────────────────────────────────────',
+    '  STRATUM II BGC CAPABILITY READINGS',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    ...Object.entries(r.stratumiReadings).map(([k,v])=>`  ${k.padEnd(5)} ${(v*100).toFixed(0).padStart(3)}%  ${'█'.repeat(Math.round(v*20))}${'░'.repeat(20-Math.round(v*20))}`),
+    '',
+    '───────────────────────────────────────────────────────────────',
+    '  GOVERNANCE GAPS IDENTIFIED',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    ...r.gaps.map(g=>`  ⚠  ${g}`),
+    '',
+    '───────────────────────────────────────────────────────────────',
+    '  STRENGTHS IDENTIFIED',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    ...r.strengths.map(s=>`  ✓  ${s}`),
+    '',
+    '───────────────────────────────────────────────────────────────',
+    '  RECOMMENDED SCENARIO',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    `  ${r.recommendedScenario.toUpperCase()}`,
+    `  ${r.recommendedRationale}`,
+    '',
+    '───────────────────────────────────────────────────────────────',
+    '  AURACELLE ORION — POLICY IMPLICATIONS',
+    '───────────────────────────────────────────────────────────────',
+    '',
+    `  ${r.policyImplications}`,
+    '',
+    '═══════════════════════════════════════════════════════════════',
+    '  © 2026 Grace Evans · Auracelle AI Governance Labs',
+    '  Proprietary IP · All rights reserved',
+    '  E-AGPO-HT v2.0 (Evans AI Governance Policy Optimization -',
+    '  Human-Technology interaction)',
+    '═══════════════════════════════════════════════════════════════',
+  ];
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`Orion-v4-ArtifactReport-${fname.replace(/\.[^.]+$/,'')}-${ts.slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Init
+window.onload=()=>{
+  updateMetrics();
+  setTimeout(()=>document.getElementById('about-modal').classList.add('on'),300);
+  const ga=document.getElementById('ga');
+  const c=makeCard();
+  c.innerHTML=`<div class="pch pcard-hdr"><div class="pbadge" style="border-color:var(--gl);color:var(--gl)">WARGAME READY · AURACELLE AI GOVERNANCE LABS · 2026</div><div class="ptitle">Select a Scenario to Begin</div></div>
+  <div class="pb pcard-body">
+    <div class="evd">Auracelle Orion v4 is a turn-based cyber governance wargaming simulation powered by the E-AGPO-HT v2.0 mathematical framework. Each scenario runs 5 turns across the full incident lifecycle — from SCTL entry point to governance consolidation.</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--txd);margin-bottom:10px;line-height:1.8">
+      TURN STRUCTURE: &nbsp;<span style="color:var(--ifd)">① Intel Phase</span> — spend tokens to reveal hidden information &nbsp;›&nbsp; <span style="color:var(--gl)">② Decision Phase</span> — choose from 4 governance options with tradeoffs &nbsp;›&nbsp; <span style="color:var(--crit)">③ Consequence</span> — E-AGPO-HT v2.0 resolves outcomes + counterfactual &nbsp;›&nbsp; <span style="color:var(--swd)">④ After-Action Review</span> — full Ψ_v2 decomposition<br><br>
+      WIN CONDITION: Ψ_v2 ≥ 0.50 at scenario end &nbsp;·&nbsp; Cascade threshold: g-GCC &lt; 0.70 throughout &nbsp;·&nbsp; Load a governance artifact in the left panel to personalise your baseline
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+      <div style="background:var(--bg0);border:1px solid var(--b1);border-radius:4px;padding:9px 10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--ifd);margin-bottom:5px;letter-spacing:.1em">MIRAGE CHAIN · FRACTURE POINT</div>
+        <div style="font-size:.68rem;color:var(--txm);line-height:1.5">Software supply chain scenarios — SBOM gaps, OSS maintainer compromise, CSIRT coordination failure, cloud concentration risk</div>
+      </div>
+      <div style="background:var(--bg0);border:1px solid var(--b1);border-radius:4px;padding:9px 10px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--crit);margin-bottom:5px;letter-spacing:.1em">IRONCLAD SIEGE · PHANTOM CIRCUIT</div>
+        <div style="font-size:.68rem;color:var(--txm);line-height:1.5">Hardware supply chain scenarios — grey-market firmware implants, OT actuation, NC3 AI integrity failure, nation-state attribution</div>
+      </div>
+    </div>
+  </div>`;
+  ga.appendChild(c);
+};
+</script>
+</body>
+</html>
+<style>
+/* Additional aliases */
+.gtr{margin-bottom:6px;}
+.gth2{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+.gtn{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--txm);}
+.gtv{font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:700;flex-shrink:0;}
+.gtbo{height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;}
+.gtbf{height:100%;border-radius:3px;transition:width .8s ease;}
+/* rs was conflicting — now only used as reg-item row in older markup; rpanel uses .rsec */
+.rs{display:block;padding:9px 13px;border-bottom:1px solid var(--b1);}
+.rd{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.rn{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--tx);margin-bottom:1px;}
+.ri{display:flex;align-items:flex-start;gap:7px;padding:4px 0;border-bottom:1px solid var(--b1);}
+.ri:last-child{border-bottom:none;}
+.rst{font-size:.61rem;color:var(--txd);line-height:1.3;}
+.dm{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);margin-bottom:2px;letter-spacing:.05em;}
+.dbef{font-family:'JetBrains Mono',monospace;font-size:.59rem;color:var(--txd);}
+.daft{font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:700;}
+.ddl{font-family:'JetBrains Mono',monospace;font-size:.53rem;margin-top:2px;}
+.dp{color:var(--ok);}.dn2{color:var(--crit);}
+.sbar{background:var(--bg1);border-bottom:1px solid var(--b1);padding:7px 18px;display:flex;align-items:center;gap:11px;flex-shrink:0;box-shadow:var(--sh-sm);}
+.sbn{font-family:'Source Serif 4',serif;font-weight:600;font-size:.86rem;color:var(--txh);}
+.sbd{font-size:.69rem;color:var(--txm);flex:1;}
+.arl{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.arc{background:var(--bg1);border:1px solid var(--b1);border-radius:5px;padding:13px;box-shadow:var(--sh-sm);}
+.art{font-family:'Source Serif 4',serif;font-weight:600;font-size:.8rem;color:var(--txh);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:7px;}
+.apc{font-family:'Source Serif 4',serif;font-weight:700;font-size:2.8rem;line-height:1;text-align:center;margin:7px 0 3px;}
+.apl{font-family:'JetBrains Mono',monospace;font-size:.49rem;color:var(--txd);letter-spacing:.1em;text-align:center;margin-bottom:5px;}
+.apg{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.73rem;padding:3px 12px;border-radius:3px;display:block;text-align:center;letter-spacing:.04em;margin-bottom:8px;}
+.prc{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txm);flex:1;}
+.prb{flex:1;height:5px;background:#e8edf4;border-radius:3px;overflow:hidden;}
+.prf{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.prs{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;width:30px;text-align:right;flex-shrink:0;}
+.pr{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.pro{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--txm);flex:1;}
+.cblock{background:var(--bg2);border:1px solid var(--b1);border-radius:4px;padding:11px 13px;margin-bottom:9px;}
+.ctit{font-family:'Source Serif 4',serif;font-weight:600;font-size:.82rem;color:var(--txh);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.dg2{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px;}
+.cn{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:2px 6px;border:1px solid;border-radius:2px;white-space:nowrap;}
+.chain{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:11px;padding:8px 11px;background:var(--bg2);border:1px solid var(--b1);border-radius:4px;}
+.cl{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--txd);letter-spacing:.1em;margin-right:2px;}
+.dprompt{font-family:'Source Serif 4',serif;font-style:italic;font-size:.81rem;color:var(--txm);margin-bottom:11px;padding-left:11px;border-left:3px solid var(--gl);}
+.otrades{display:flex;gap:4px;flex-wrap:wrap;}
+.opt{background:var(--bg2);border:1.5px solid var(--b1);border-radius:5px;padding:12px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.opt::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--oc,var(--b1));transition:width .2s;}
+.opt:hover,.opt.sel{border-color:var(--oc);background:var(--bg1);box-shadow:var(--sh-md);}
+.opt:hover::before,.opt.sel::before{width:4px;}
+.apl2{display:flex;justify-content:flex-end;padding-top:9px;}
+.btn{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;padding:7px 17px;border:1.5px solid;border-radius:4px;background:transparent;cursor:pointer;transition:all .2s;}
+.plv{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.85rem;line-height:1;}
+.pll{font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--txd);letter-spacing:.1em;margin-top:2px;}
+.plb{margin-top:6px;height:7px;background:#e8edf4;border-radius:4px;overflow:hidden;position:relative;}
+.ptbl{position:absolute;top:0;bottom:0;width:2px;background:rgba(184,138,0,.55);left:50%;}
+.ptbf{height:100%;border-radius:4px;transition:width .9s ease;}
+.ptb{margin-top:6px;height:7px;background:#e8edf4;border-radius:4px;overflow:hidden;position:relative;}
+.egb{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 24px;border:1.5px solid var(--accent);border-radius:4px;color:var(--accent);background:var(--ifdd);cursor:pointer;transition:all .2s;}
+.egb:hover{background:#d0e6f8;}
+.egi{font-size:2.5rem;margin-bottom:10px;}
+.egt{font-family:'Source Serif 4',serif;font-weight:700;font-size:1.35rem;color:var(--txh);margin-bottom:5px;}
+.egp{font-family:'Source Serif 4',serif;font-weight:700;font-size:2.9rem;line-height:1;margin-bottom:2px;}
+.egpl{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--txd);letter-spacing:.12em;margin-bottom:13px;}
+.egs{font-size:.76rem;color:var(--txm);line-height:1.6;margin-bottom:16px;}
+.egbtn{font-family:'DM Sans',sans-serif;font-weight:700;font-size:.79rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 24px;border:1.5px solid var(--accent);border-radius:4px;color:var(--accent);background:var(--ifdd);cursor:pointer;transition:all .2s;}
+.egbtn:hover{background:#d0e6f8;}
+.brm{display:flex;gap:8px;padding-top:9px;}
+.br{display:flex;justify-content:flex-end;padding-top:9px;}
+.bn{font-family:'JetBrains Mono',monospace;font-size:.56rem;padding:2px 6px;border:1px solid;border-radius:2px;}
+.bn-a{border-color:var(--ifd);color:var(--ifd);background:var(--ifdd);}
+.bn-b{border-color:var(--swd);color:var(--swd);background:var(--swdd);}
+.bn-c{border-color:var(--sc);color:var(--sc);background:var(--scd);}
+.bn-d{border-color:var(--gov);color:var(--gov);background:var(--govd);}
+.bn-e{border-color:var(--crit);color:var(--crit);background:#fde8e7;}
+.db{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px;}
+.casc{display:flex;align-items:flex-start;gap:9px;background:#fef4ec;border:1px solid #f5c898;border-radius:4px;padding:9px 11px;margin-bottom:7px;}
+.cfc{font-size:.69rem;color:var(--txm);line-height:1.5;}
+</style>
